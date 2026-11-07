@@ -1,3 +1,11 @@
+<!-- astria-logo -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/astria-logo-reverse.svg">
+    <img src=".github/assets/astria-logo.svg" alt="Astria" width="320">
+  </picture>
+</p>
+
 # Astria web
 
 Antarmuka dasbor Astria: page SSR, view CSR, layout CSR, dan hook (Next.js).
@@ -7,6 +15,20 @@ Antarmuka dasbor Astria: page SSR, view CSR, layout CSR, dan hook (Next.js).
 ## Tech stack
 
 Next.js 16 (SSR standalone), React 19, TypeScript 6, Tailwind 4, shadcn + Radix, TanStack Query; Bun (utama) dan npm
+
+## Ikon dan logo
+
+Berkas di `public/` disalin dari kit logo di repo `triase-dfir-uiux` (`assets/astria/`); ubah di sana dulu, lalu salin ulang.
+
+| Berkas | Pakai untuk |
+|---|---|
+| `favicon.ico` | Favicon (16, 32, 48 px) |
+| `apple-touch-icon.png` | Ikon layar utama iOS (180 px) |
+| `icon-192.png`, `icon-512.png` | Ikon manifest PWA |
+| `astria-mark.svg` | Simbol saja; di bawah lebar 140 px |
+| `astria-logo.svg`, `astria-logo-reverse.svg` | Logo lengkap untuk latar terang dan latar navy |
+
+Ikon dan favicon disajikan lokal, tanpa CDN (lihat note web).
 
 ## Bun dan npm
 

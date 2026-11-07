@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="128"
+   height="128"
+   viewBox="0 0 128 128"
+   role="img"
+   aria-labelledby="title"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <title
+     id="title">Astria — signal apex symbol</title>
+  <g
+     id="content">
+    <g
+       id="symbol">
+      <path
+         id="symbol-apex"
+         fill="#112C3B"
+         d="M12 108 53 20H75L116 108H90L64 52 38 108Z" />
+      <path
+         id="symbol-signal"
+         fill="#008775"
+         d="m64 77 14 31H50Z" />
+    </g>
+  </g>
+</svg>
