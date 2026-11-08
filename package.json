@@ -13,7 +13,9 @@
     "start": "next start --port 3100",
     "typecheck": "tsc --noEmit",
     "check": "biome check .",
-    "test": "node scripts/browser-check.mjs"
+    "test": "node scripts/browser-check.mjs",
+    "test:unit": "vitest run",
+    "test:arch": "vitest run tests/architecture.test.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "^5.2.7",
@@ -25,12 +27,15 @@
     "@tailwindcss/postcss": "^4.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@biomejs/biome": "^2.3.0",
+    "@playwright/test": "^1.56.0",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "jsdom": "^27.1.0",
     "typescript": "^6.0.0",
-    "@playwright/test": "^1.56.0",
-    "@axe-core/playwright": "^4.11.0"
+    "vitest": "^4.0.0"
   }
 }

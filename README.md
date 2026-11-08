@@ -10,7 +10,7 @@
 
 Antarmuka dasbor Astria: page SSR, view CSR, layout CSR, dan hook (Next.js).
 
-> Status: runnable component showcase and responsive queue/detail examples based on the Astria Penpot design. Uses the shared library in sibling `ui/`. Data and actions are explicitly local previews; backend integration and authentication are not implemented here.
+> Status: all screens of the Astria design run as a local preview (login, home, queue and card detail, digests, handover, upload, metrics, DFIR cases, admin pages, audit) plus the `/components` gallery. They use the shared library in sibling `ui/`. Data and actions are explicitly local previews; backend integration, real sign-in and server-side role checks are not implemented here.
 
 ## Tech stack
 
@@ -26,7 +26,23 @@ bun install --cwd web --frozen-lockfile
 bun run --cwd web dev
 ```
 
-Open `http://localhost:3100/components` (also `/`) for all component categories. `/cards` demonstrates search, status tabs, band/asset filters and responsive cards; `/cards/[id]` demonstrates evidence links and detail panels. Unknown card IDs return 404. Form saves, upload progression and chat messages are local simulations and never call an external service.
+Open `http://localhost:3100/` for the home screen. The role selector in the top bar ("Peran pratinjau") only changes the sidebar menu; it is not access control.
+
+| Route | Screen |
+|---|---|
+| `/login` | L0 Masuk (credentials are not checked) |
+| `/` | L1 Beranda |
+| `/cards`, `/cards/[id]` | L2 Antrean and card detail |
+| `/digests`, `/digests/[id]` | L3 Digest |
+| `/handover` | L4 Serah terima |
+| `/upload` | L5 Unggah alert |
+| `/metrics` | L6 Metrik |
+| `/configuration`, `/channels`, `/settings`, `/identities`, `/deliveries`, `/users` | L7 Konfigurasi and admin pages |
+| `/cases`, `/cases/[id]` | L8 Kasus DFIR |
+| `/audit` | L9 Audit |
+| `/components` | Developer component gallery |
+
+`/components` shows all component categories. `/cards` demonstrates search, status tabs, band/asset filters and responsive cards; `/cards/[id]` demonstrates evidence links and detail panels. Unknown card IDs return 404. Form saves, upload progression and chat messages are local simulations and never call an external service.
 
 Pages remain server components; `src/views/*.view.tsx` and `src/layouts/*.layout.tsx` own client interactions. Data fixtures are isolated in `src/data/fixtures.ts`. Fonts, logo and mascot assets are local.
 
@@ -34,16 +50,23 @@ The TypeScript `@astria/ui` alias resolves directly to `../ui/src`; CSS imports 
 
 For npm, install in each sibling using `npm install --package-lock=false`, then use `npm run dev`. Only Bun lockfiles are tracked.
 
+## Structure
+
+`src/app/` holds routing only: server `page.tsx`, `loading.tsx`, `not-found.tsx`, and `error.tsx` (the one client file). Each feature folder in `src/features/` holds its `*.view.tsx` (client, no logic), `*.layout.tsx` and `use-*.hook.ts` (state and actions, each with a sibling `*.test.ts`). Views never call React or Next hooks directly. `tests/architecture.test.ts` enforces this, plus kebab-case file names, a page for every sidebar link, boundaries for the app group and each dynamic segment, no `dangerouslySetInnerHTML`, and no Mode juri.
+
 ## Checks
 
 ```powershell
 bun run typecheck
 bun run check
+bun run test:unit
 bun run build
 bun run test
 ```
 
-`test` launches the production build on port 3110, checks desktop/tablet/mobile behavior in Playwright, runs axe WCAG A/AA scans across all gallery categories and queue widths, and stops its server/browser. On Windows it uses installed Edge; elsewhere install Playwright Chromium first (`bunx playwright install chromium`). Override `ASTRIA_BROWSER_PATH` for another local Chromium binary, or `ASTRIA_TEST_URL` to test an already-running app.
+`test:unit` runs Vitest (hook tests and the architecture tests) and works the same with `npm run test:unit`. `test:arch` runs only the architecture tests.
+
+`test` launches the production build on port 3110, checks desktop/tablet/mobile behavior in Playwright, runs axe WCAG A/AA scans across all gallery categories, the queue widths and every screen, exercises the login, handover, upload, metrics, channel test and audit flows, and stops its server/browser. On Windows it uses installed Edge; elsewhere install Playwright Chromium first (`bunx playwright install chromium`). Override `ASTRIA_BROWSER_PATH` for another local Chromium binary, or `ASTRIA_TEST_URL` to test an already-running app.
 
 Results and screenshots are written to ignored `.artifacts/`. The UI component tests run from `../ui`. Axe is an automated check, not a full accessibility certification or exact pixel comparison.
 
