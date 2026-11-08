@@ -5,9 +5,9 @@ export default function NotFound() {
       <h1 className="a-sr-only">Halaman tidak ditemukan</h1>
       <EmptyState
         title="404 · Halaman tidak ditemukan"
-        description="Periksa alamat atau kembali ke pustaka komponen."
+        description="Periksa alamat atau kembali ke beranda."
         icon={<Icon name="file-search" size={32} />}
-        action={<a href="/components">Kembali ke pustaka</a>}
+        action={<a href="/">Kembali ke beranda</a>}
       />
     </main>
   );

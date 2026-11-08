@@ -6,8 +6,8 @@ import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Astria · Pustaka komponen",
-  description: "Komponen Astria dari desain Penpot. Pratinjau dengan data contoh.",
+  title: "Astria",
+  description: "Asisten triase insiden dan DFIR. Pratinjau antarmuka dengan data contoh.",
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
