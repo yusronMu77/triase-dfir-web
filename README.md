@@ -70,6 +70,17 @@ bun run test
 
 Results and screenshots are written to ignored `.artifacts/`. The UI component tests run from `../ui`. Axe is an automated check, not a full accessibility certification or exact pixel comparison.
 
+## Content-Security-Policy
+
+`src/proxy.ts` creates a fresh nonce per request and sets a strict CSP (`script-src 'self' 'nonce-…' 'strict-dynamic'`, no `unsafe-inline` or `unsafe-eval` for scripts in production) plus `X-Content-Type-Options`, `Referrer-Policy` and `Permissions-Policy`. The root layout reads the nonce, so every page renders per request. The builder is `src/lib/content-security-policy.ts`.
+
+```powershell
+bun run build
+bun run test:csp   # starts the server, opens 11 routes in Chromium, checks nonce, scripts and violations
+```
+
+`src/lib/preview-route-guard.ts` answers 404 for unknown preview IDs inside the proxy, because a dynamic layout streams a 200 before `notFound()` runs. Remove it when pages load data from services.
+
 ## Design and integration
 
 Native Penpot HTML/CSS for 174 variants and all original token values are in `../ui/design-reference/`, exported before implementation. See `../ui/README.md` for component APIs, design mapping and behavior boundaries. `/components` is a developer preview route; restrict or exclude it when deploying the operational application. Integrate real auth, role enforcement, data queries and action handlers separately from the library.
