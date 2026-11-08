@@ -1,0 +1,29 @@
+# Ask the root repo (yusronMu77/triase-dfir) to sync the Astria board when an issue, PR or branch changes here.
+# Source of truth: triase-dfir/scripts/board-sync/board-dispatch.yml (copied into every sibling repo).
+# Needs repo secret BOARD_TOKEN (classic PAT, scopes `project` and `repo`).
+name: board-dispatch
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+  pull_request:
+    types: [opened, reopened, ready_for_review, converted_to_draft, closed]
+  create:
+
+permissions: {}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger board-sync in the root repo
+        env:
+          GH_TOKEN: ${{ secrets.BOARD_TOKEN }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          gh api repos/yusronMu77/triase-dfir/dispatches \
+            -f event_type=board-sync \
+            -f "client_payload[repo]=$REPO" \
+            -f "client_payload[event]=$EVENT"
