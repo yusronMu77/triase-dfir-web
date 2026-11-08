@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "check": "biome check .",
     "test": "node scripts/browser-check.mjs",
+    "test:csp": "node scripts/csp-check.mjs",
     "test:unit": "vitest run",
     "test:arch": "vitest run tests/architecture.test.ts"
   },
