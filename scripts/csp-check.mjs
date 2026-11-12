@@ -2,10 +2,11 @@
 import { chromium } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { mockApi } from './integration-check.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const baseURL = process.env.ASTRIA_TEST_URL || 'http://127.0.0.1:3111';
-const routes = ['/login', '/', '/cards', '/cards/IC-20261110-003', '/digests', '/upload', '/metrics', '/cases', '/configuration', '/audit', '/components'];
+const routes = ['/login', '/', '/cards', '/cards/IC-20261112-001', '/digests', '/upload', '/metrics', '/cases', '/configuration', '/audit', '/components'];
 let server;
 let browser;
 const problems = [];
@@ -20,7 +21,9 @@ try {
     if (!ready) throw new Error('server did not start');
   }
   browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
-  const page = await (await browser.newContext()).newPage();
+  const context = await browser.newContext();
+  await mockApi(context, 'analis'); // the shell reads /auth/me; the mock keeps the CSP check independent of the api
+  const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error' || /content security policy/i.test(m.text())) errors.push(m.text()); });
@@ -39,7 +42,8 @@ try {
       hydrated: !!document.querySelector('[data-nextjs-router]') || document.documentElement.innerHTML.includes('self.__next_f'),
     }));
     nonces.add(nonce);
-    const unnonced = info.scripts.filter((s) => !s.hasNonce).length;
+    // Chunks that a nonced script loads lazily (for example a chart) carry no nonce; 'strict-dynamic' allows them.
+    const unnonced = info.scripts.filter((s) => !s.hasNonce && !s.external).length;
     const headersOk = response.headers()['x-content-type-options'] === 'nosniff' && !!response.headers()['referrer-policy'];
     const ok = response.status() === 200 && !!nonce && !/script-src[^;]*unsafe-inline/.test(csp) && !/style-src [^;]*unsafe-inline/.test(csp) && !csp.includes('unsafe-eval') && unnonced === 0 && info.scripts.length > 0 && info.violations.length === 0 && headersOk;
     console.log(`${ok ? 'PASS' : 'FAIL'} ${route} status=${response.status()} scripts=${info.scripts.length} unnonced=${unnonced} violations=${JSON.stringify(info.violations)}`);

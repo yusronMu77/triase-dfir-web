@@ -13,15 +13,21 @@ export function createNonce(): string {
 export function buildContentSecurityPolicy({ nonce, development = false }: SecurityHeaderOptions): string {
   const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"];
   if (development) scriptSrc.push("'unsafe-eval'");
+  // The Next.js dev overlay injects <style> elements without a nonce. A nonce makes browsers ignore
+  // 'unsafe-inline', so dev drops it; production keeps the nonce-only policy.
+  const styleSrc = development ? ["'self'", "'unsafe-inline'"] : ["'self'", `'nonce-${nonce}'`];
   const directives: Array<[string, string[]]> = [
     ["default-src", ["'self'"]],
     ["script-src", scriptSrc],
-    ["style-src", ["'self'", `'nonce-${nonce}'`]],
+    ["style-src", styleSrc],
     // React renders `style={{...}}` as style attributes, which cannot carry a nonce. Scripts stay nonce-only.
     ["style-src-attr", ["'unsafe-inline'"]],
     ["img-src", ["'self'", "data:"]],
     ["font-src", ["'self'"]],
     ["connect-src", ["'self'"]],
+    // Server documents (digest, case report) are fetched as a Blob and shown in a sandboxed iframe without
+    // `allow-scripts`. Without this, `default-src 'self'` blocks the blob: frame. Nothing else may be framed.
+    ["frame-src", ["blob:"]],
     ["object-src", ["'none'"]],
     ["base-uri", ["'self'"]],
     ["form-action", ["'self'"]],

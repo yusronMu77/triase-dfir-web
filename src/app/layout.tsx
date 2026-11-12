@@ -6,9 +6,10 @@ import "@fontsource/ibm-plex-sans/600.css";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
+import { QueryProvider } from "../lib/query/query-provider";
 export const metadata: Metadata = {
   title: "Astria",
-  description: "Asisten triase insiden dan DFIR. Pratinjau antarmuka dengan data contoh.",
+  description: "Asisten triase insiden dan DFIR. Dasbor operasional.",
 };
 /** Rendered per request: the nonce CSP from proxy.ts only works on dynamic pages (Next stamps scripts with the nonce). */
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {nonce ? (
           <script nonce={nonce}>{`globalThis.__webpack_nonce__=${JSON.stringify(nonce)};`}</script>
         ) : null}
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

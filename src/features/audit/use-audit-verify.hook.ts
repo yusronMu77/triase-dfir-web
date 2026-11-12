@@ -1,27 +1,46 @@
 "use client";
-import { useCallback, useState } from "react";
-import type { AuditRow } from "../../data/audit";
-import { pause } from "../../lib/pause";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { auditService } from "../../services/audit.service";
+import type { VerifyResult } from "../../services/audit.types";
+import { useSession } from "../session/use-session.hook";
+import { toVerifyView } from "./audit.mapper";
 
-export type ChainResult = { ok: true } | { ok: false; brokenAt: number };
+/** Polling interval for a running verification. */
+export const VERIFY_POLL_MS = 1000;
 
-/** Checks that each entry points at the hash of the previous one. The audit service is the real verifier. */
-export function verifyChain(rows: AuditRow[]): ChainResult {
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i].prev !== rows[i - 1].hash) return { ok: false, brokenAt: rows[i].seq };
-  }
-  return { ok: true };
-}
+/** Key prefix `["audit", ...]` so that `queryKeys.audit.all` invalidation also covers verification jobs. */
+const verifyKey = (jobId: string) => ["audit", "verify", jobId] as const;
 
-export function useAuditVerify(rows: AuditRow[]) {
-  const [status, setStatus] = useState<"idle" | "checking" | "valid" | "broken">("idle");
-  const [brokenAt, setBrokenAt] = useState<number | null>(null);
-  const verify = useCallback(async () => {
-    setStatus("checking");
-    await pause(500);
-    const result = verifyChain(rows);
-    setBrokenAt(result.ok ? null : result.brokenAt);
-    setStatus(result.ok ? "valid" : "broken");
-  }, [rows]);
-  return { status, brokenAt, verify };
+/**
+ * Starts a full-chain verification (requires `audit:verify`) and polls the job until it is no longer running.
+ * The button is hidden for other roles; the server still enforces the permission.
+ */
+export function useAuditVerify(pollMs = VERIFY_POLL_MS) {
+  const { can } = useSession();
+  const start = useMutation({ mutationFn: () => auditService.startVerify() });
+
+  const startedJob = start.data?.status === "berjalan" ? start.data.job_id : null;
+  const poll = useQuery({
+    queryKey: verifyKey(startedJob ?? ""),
+    queryFn: ({ signal }) => auditService.verifyJob(startedJob ?? "", signal),
+    enabled: startedJob !== null,
+    refetchInterval: (query) => {
+      if (query.state.error) return false;
+      const status = query.state.data?.status;
+      return status === undefined || status === "berjalan" ? pollMs : false;
+    },
+  });
+
+  const current: VerifyResult | null = poll.data ?? start.data ?? null;
+  const view = toVerifyView(current);
+  const error = start.error ?? (startedJob !== null && !poll.data ? poll.error : null);
+
+  return {
+    canVerify: can("audit:verify"),
+    view,
+    running: start.isPending || view.kind === "running",
+    error,
+    verify: () => start.mutate(),
+    retry: () => (start.isError ? start.mutate() : void poll.refetch()),
+  };
 }

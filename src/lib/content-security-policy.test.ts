@@ -28,6 +28,21 @@ describe("content security policy", () => {
     expect(directive(policy, "script-src")).not.toContain("unsafe-inline");
   });
 
+  it("lets the Next.js dev overlay inject styles in development only", () => {
+    const dev = buildContentSecurityPolicy({ nonce: "abc", development: true });
+    expect(directive(dev, "style-src")).toBe("'self' 'unsafe-inline'");
+    expect(directive(dev, "script-src")).not.toContain("unsafe-inline");
+    expect(directive(buildContentSecurityPolicy({ nonce: "abc" }), "style-src")).not.toContain(
+      "unsafe-inline",
+    );
+  });
+
+  it("frames blob: documents only, so the sandboxed document viewer works", () => {
+    const policy = buildContentSecurityPolicy({ nonce: "abc" });
+    expect(directive(policy, "frame-src")).toBe("blob:");
+    expect(directive(policy, "frame-ancestors")).toBe("'none'");
+  });
+
   it("allows eval only in development", () => {
     expect(
       directive(buildContentSecurityPolicy({ nonce: "abc", development: true }), "script-src"),

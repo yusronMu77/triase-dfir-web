@@ -1,23 +1,48 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { describeError } from "../../lib/http/api-error";
+import { identitiesService } from "../../services/identities.service";
+import { normalizeChannelInput, type PairingView, toPairingView } from "./identities.mapper";
 
-const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+/**
+ * Issues one-time pairing codes for the signed-in user. The code is kept in component state only: it is
+ * shown once and never written to storage or logs. The identity service stores only its hash.
+ */
+export function usePairing() {
+  const [pairing, setPairing] = useState<PairingView | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const lastChannel = useRef<string | undefined>(undefined);
 
-export function makePairingCode(random: () => number = Math.random) {
-  const chunk = () =>
-    Array.from({ length: 4 }, () => alphabet[Math.floor(random() * alphabet.length)]).join("");
-  return `AST-${chunk()}-${chunk()}`;
-}
+  const issue = useCallback(async (text: string) => {
+    const input = normalizeChannelInput(text);
+    if (!input.ok) {
+      setError(input.message);
+      return;
+    }
+    lastChannel.current = input.channel;
+    setBusy(true);
+    setError(null);
+    try {
+      const issued = await identitiesService.issuePairingCode(
+        input.channel ? { channel: input.channel } : {},
+      );
+      const view = toPairingView(issued);
+      if (!view) {
+        setPairing(null);
+        setError("Respons layanan tidak dapat dibaca. Silakan coba lagi.");
+        return;
+      }
+      setPairing(view);
+    } catch (caught) {
+      setPairing(null);
+      setError(describeError(caught));
+    } finally {
+      setBusy(false);
+    }
+  }, []);
 
-/** Preview pairing code. The identity service issues and expires real codes. */
-export function usePairing(
-  initial: { code: string; expiresAt: string },
-  now: () => number = Date.now,
-  ttlMs = 10 * 60 * 1000,
-) {
-  const [pairing, setPairing] = useState(initial);
-  const regenerate = useCallback(() => {
-    setPairing({ code: makePairingCode(), expiresAt: new Date(now() + ttlMs).toISOString() });
-  }, [now, ttlMs]);
-  return { ...pairing, regenerate };
+  const regenerate = useCallback(() => issue(lastChannel.current ?? ""), [issue]);
+
+  return { pairing, busy, error, issue, regenerate };
 }

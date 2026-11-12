@@ -1,6 +1,5 @@
-import { digests } from "../../../data/digests";
 import { DigestListView } from "../../../features/digest/digest-list.view";
 
 export default function Page() {
-  return <DigestListView rows={digests} />;
+  return <DigestListView />;
 }

@@ -1,16 +1,18 @@
 "use client";
-import { Badge, Field, MetricChart, MetricsSummary, PageHeader, Select } from "@astria/ui";
-import type { MetricsRange } from "../../data/metrics";
+import { Badge, EmptyState, Field, MetricChart, MetricsSummary, PageHeader, Select } from "@astria/ui";
+import { QueryBoundary } from "../shared/query-boundary.view";
 import { useMetrics } from "./use-metrics.hook";
 
 export function MetricsView() {
-  const { range, setRange, data } = useMetrics();
+  const metrics = useMetrics();
+  const { view } = metrics;
+
   return (
     <>
       <PageHeader
         title="Metrik"
-        description="Kinerja triase dan kepatuhan SLA"
-        action={<Badge tone="info">Data contoh</Badge>}
+        description="Ringkasan kartu dan SLA, dihitung oleh layanan tiket"
+        action={<Badge tone="info">{metrics.days} hari terakhir</Badge>}
       />
       <div className="a-stack">
         <div className="showcase-toolbar">
@@ -18,8 +20,8 @@ export function MetricsView() {
             {(props) => (
               <Select
                 {...props}
-                value={range}
-                onChange={(event) => setRange(event.target.value as MetricsRange)}
+                value={String(metrics.days)}
+                onChange={(event) => metrics.setDays(event.target.value === "30" ? 30 : 7)}
               >
                 <option value="7">7 hari terakhir</option>
                 <option value="30">30 hari terakhir</option>
@@ -27,19 +29,43 @@ export function MetricsView() {
             )}
           </Field>
         </div>
-        <MetricsSummary metrics={data.summary} />
-        <div className="showcase-grid">
-          <MetricChart
-            title="Kartu per band"
-            description="Jumlah kartu menurut band skor"
-            data={data.byBand}
+        {!metrics.allowed && !metrics.loading && !metrics.error ? (
+          <EmptyState
+            title="Metrik tidak tersedia"
+            description="Peran Anda tidak memiliki akses ke metrik."
           />
-          <MetricChart
-            title="Kartu masuk per hari"
-            description="Volume alert yang menjadi kartu"
-            data={data.byDay}
-          />
-        </div>
+        ) : (
+          <QueryBoundary
+            loading={metrics.loading}
+            error={metrics.error}
+            onRetry={metrics.retry}
+            skeleton="cards"
+          >
+            {view && (
+              <>
+                <MetricsSummary metrics={view.summary} />
+                <div className="showcase-grid">
+                  <MetricChart
+                    title="Kartu per band"
+                    description="Jumlah kartu menurut band skor"
+                    data={view.byBand}
+                  />
+                  <MetricChart
+                    title="Kartu per status"
+                    description="Posisi kartu saat ini"
+                    data={view.byStatus}
+                  />
+                  <MetricChart
+                    title="Umpan balik analis"
+                    description="Penilaian analis terhadap alert"
+                    data={view.feedback}
+                    unit="umpan balik"
+                  />
+                </div>
+              </>
+            )}
+          </QueryBoundary>
+        )}
       </div>
     </>
   );
