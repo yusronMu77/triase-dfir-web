@@ -44,7 +44,7 @@ describe("caseService", () => {
     );
     const blob = await caseService.report("CS-20261112-001");
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/api/v1/cases/CS-20261112-001/report?format=html");
-    expect(blob).toBeInstanceOf(Blob);
+    expect(Object.prototype.toString.call(blob)).toBe("[object Blob]"); // not instanceof: jsdom and Node have different Blob classes
     expect(blob.size).toBe(new TextEncoder().encode("<h1>Laporan</h1>").length);
     expect(blob.type).toMatch(/^text\/html/);
   });
