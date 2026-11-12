@@ -1,45 +1,52 @@
 "use client";
-import { Badge, BandChip, CaseList, type Column, PageHeader } from "@astria/ui";
-import Link from "next/link";
-import type { CaseRow } from "../../data/cases";
+import { Alert, Button, Card, CardContent, CardHeader, Field, Input, PageHeader } from "@astria/ui";
+import { CASE_ID_HINT } from "./case.mapper";
+import { useCaseLookup } from "./use-case-lookup.hook";
 
-const statusTone = { Diselidiki: "info", "Menunggu laporan": "warning", Selesai: "success" } as const;
-
-const columns: Column<CaseRow>[] = [
-  {
-    id: "id",
-    header: "Kasus",
-    cell: (row) => (
-      <>
-        <Link className="a-table-title" href={`/cases/${row.id}`}>
-          {row.title}
-        </Link>
-        <small className="a-muted a-block">{row.id}</small>
-      </>
-    ),
-    sortValue: (row) => row.id,
-  },
-  {
-    id: "band",
-    header: "Band",
-    cell: (row) => <BandChip band={row.band} score={row.score} />,
-    sortValue: (row) => row.score,
-  },
-  { id: "asset", header: "Aset", cell: (row) => row.asset },
-  { id: "owner", header: "Petugas", cell: (row) => row.owner },
-  {
-    id: "status",
-    header: "Status",
-    cell: (row) => <Badge tone={statusTone[row.status]}>{row.status}</Badge>,
-  },
-  { id: "updated", header: "Diperbarui", cell: (row) => row.updated },
-];
-
-export function CaseListView({ rows }: { rows: CaseRow[] }) {
+/** The api has no case list endpoint, so this screen opens a case by its ID instead of listing cases. */
+export function CaseListView() {
+  const lookup = useCaseLookup();
   return (
     <>
       <PageHeader title="Kasus DFIR" description="Penyelidikan dan tindak lanjut insiden" />
-      <CaseList rows={rows} columns={columns} rowKey={(row) => row.id} />
+      <div className="a-stack">
+        <Alert tone="info" title="Daftar kasus belum tersedia">
+          Kasus dibuka dari detail kartu lewat "Minta analisis DFIR". Layanan belum menyediakan daftar semua
+          kasus, jadi buka kasus dengan ID-nya di bawah.
+        </Alert>
+        <Card>
+          <CardHeader
+            title="Buka kasus menurut ID"
+            description="Masukkan ID kasus yang Anda terima dari detail kartu."
+          />
+          <CardContent>
+            <form
+              className="a-stack"
+              noValidate
+              onSubmit={(event) => {
+                event.preventDefault();
+                lookup.submit();
+              }}
+            >
+              <Field label="ID kasus" hint={CASE_ID_HINT} error={lookup.error || undefined}>
+                {(props) => (
+                  <Input
+                    {...props}
+                    value={lookup.value}
+                    onChange={(event) => lookup.setValue(event.target.value)}
+                    placeholder="CS-20261112-001"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                )}
+              </Field>
+              <div>
+                <Button type="submit">Buka kasus</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }

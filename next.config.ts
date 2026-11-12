@@ -11,5 +11,11 @@ const nextConfig: NextConfig = {
     },
   },
   outputFileTracingRoot: path.resolve(import.meta.dirname, '..'),
+  // Local development without Caddy: set ASTRIA_API_ORIGIN (for example the api container's published address)
+  // so the browser keeps calling same-origin /api/v1. Unset in production, where Caddy routes /api/v1/*.
+  async rewrites() {
+    const origin = process.env.ASTRIA_API_ORIGIN?.trim().replace(/\/+$/, '');
+    return origin ? [{ source: '/api/v1/:path*', destination: `${origin}/api/v1/:path*` }] : [];
+  },
 };
 export default nextConfig;

@@ -86,8 +86,8 @@ import {
   WhatsAppChannelPlan,
 } from "@astria/ui";
 import dynamic from "next/dynamic";
-import { events, evidence, queueItems } from "../../data/fixtures";
 import { pause } from "../../lib/pause";
+import { events, evidence, queueItems } from "./showcase.fixtures";
 import { useShowcase } from "./use-showcase.hook";
 
 const MetricChart = dynamic(() => import("@astria/ui").then((module) => module.MetricChart), {

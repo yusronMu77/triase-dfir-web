@@ -1,36 +1,58 @@
 "use client";
-import { AppShell, Select, ToastProvider, TopBar } from "@astria/ui";
+import { Alert, AppShell, Badge, InlineLoading, roleLabels, ToastProvider, TopBar } from "@astria/ui";
 import type { ReactNode } from "react";
-import { isRole, roleOptions } from "../../data/personas";
+import { ErrorPanel } from "../shared/query-boundary.view";
 import { useShellState } from "./use-shell-state.hook";
 
 export function AnalystLayout({ children }: { children: ReactNode }) {
   const shell = useShellState();
+  const { session } = shell;
+  if (session.loading) {
+    return (
+      <main className="web-auth-body" id="main-content" aria-busy="true">
+        <InlineLoading>Memuat sesi…</InlineLoading>
+      </main>
+    );
+  }
+  if (session.error || !session.user) {
+    return (
+      <main className="web-auth-body" id="main-content">
+        <ErrorPanel error={session.error} onRetry={session.retry} />
+      </main>
+    );
+  }
+  if (!session.role) {
+    return (
+      <main className="web-auth-body" id="main-content">
+        <Alert tone="danger" title="Peran tidak dikenal">
+          Akun ini tidak punya peran yang dikenali Astria. Hubungi administrator.
+        </Alert>
+      </main>
+    );
+  }
   return (
     <ToastProvider>
       <AppShell
-        name={shell.persona.name}
-        role={shell.role}
-        subtitle={shell.persona.subtitle}
+        name={session.user.user_id}
+        role={session.role}
+        subtitle={roleLabels[session.role]}
         activePath={shell.activePath}
         onNavigate={shell.navigate}
         onSignOut={shell.signOut}
         topbar={
-          <TopBar serviceStatus="Data contoh · tanpa koneksi layanan">
-            <Select
-              aria-label="Peran pratinjau"
-              value={shell.role}
-              onChange={(event) => isRole(event.target.value) && shell.setRole(event.target.value)}
-            >
-              {roleOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
+          <TopBar serviceStatus="">
+            <Badge tone={shell.status.tone}>
+              <span className="a-dot" />
+              {shell.status.label}
+            </Badge>
           </TopBar>
         }
       >
+        {shell.signOutError && (
+          <Alert tone="danger" title="Gagal keluar">
+            {shell.signOutError}
+          </Alert>
+        )}
         {children}
       </AppShell>
     </ToastProvider>
