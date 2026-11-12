@@ -116,7 +116,7 @@ describe("apiRequest", () => {
       new Response("<p>laporan</p>", { status: 200, headers: { "Content-Type": "text/html" } }),
     );
     const blob = await apiRequest<Blob>({ path: "/cases/CS-1/report", as: "blob" });
-    expect(blob).toBeInstanceOf(Blob);
+    expect(Object.prototype.toString.call(blob)).toBe("[object Blob]"); // not instanceof: jsdom and Node have different Blob classes
     expect(blob.size).toBe("<p>laporan</p>".length);
     expect(lastCall(fetchMock).headers.get("Accept")).toBe("*/*");
   });
