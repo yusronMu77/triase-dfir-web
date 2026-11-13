@@ -19,8 +19,8 @@ const BAND_ORDER = [
 ] as const;
 
 const FEEDBACK_ORDER = [
-  { key: "benar", label: "Benar" },
-  { key: "salah_positif", label: "Salah positif" },
+  { key: "benar", label: "True positive" },
+  { key: "salah_positif", label: "False positive" },
   { key: "perlu_dfir", label: "Perlu DFIR" },
 ] as const;
 
@@ -54,9 +54,9 @@ export function toMetricsView(stats: TicketStats) {
       },
       { label: "Kartu kritis", value: String(count(stats.per_band, "KRITIS")), meta: "Band KRITIS" },
       {
-        label: "Umpan balik analis",
+        label: "Feedback analis",
         value: String(feedbackTotal),
-        meta: "Benar, salah positif, atau perlu DFIR",
+        meta: "True positive, false positive, atau perlu DFIR",
       },
     ],
     byBand: BAND_ORDER.map(

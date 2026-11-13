@@ -26,7 +26,7 @@ export function WhatsAppLinkCard() {
         description="Nomor bot yang mengirim notifikasi dan menjawab perintah chat (uji)."
         action={
           wa.link && (
-            <Badge tone={linked ? "success" : "warning"}>{linked ? "Tertaut" : "Belum tertaut"}</Badge>
+            <Badge tone={linked ? "success" : "warning"}>{linked ? "Terhubung" : "Belum terhubung"}</Badge>
           )
         }
       />
@@ -46,7 +46,7 @@ export function WhatsAppLinkCard() {
         )}
         {linked && (
           <>
-            <p>Tertaut ke {wa.link?.nomor_tersamar ?? "nomor tidak diketahui"}.</p>
+            <p>Terhubung ke {wa.link?.nomor_tersamar ?? "nomor tidak diketahui"}.</p>
             <div className="a-row">
               <Button variant="danger" onClick={wa.openConfirm}>
                 Putuskan tautan
@@ -59,7 +59,7 @@ export function WhatsAppLinkCard() {
             <ol>
               <li>Buka WhatsApp di HP nomor bot.</li>
               <li>Pilih Perangkat tertaut, lalu Tautkan perangkat.</li>
-              <li>Pindai QR ini. QR berganti otomatis.</li>
+              <li>Scan QR ini. QR diperbarui otomatis.</li>
             </ol>
             {/* biome-ignore lint/performance/noImgElement: data URL QR, not an optimisable asset */}
             <img src={wa.link.qr} alt="QR untuk menautkan bot WhatsApp" width={QR_SIZE} height={QR_SIZE} />
@@ -74,12 +74,12 @@ export function WhatsAppLinkCard() {
         }}
       >
         <DialogContent
-          title="Putuskan tautan bot WhatsApp?"
-          description="Bot berhenti mengirim notifikasi dan menjawab perintah sampai QR baru dipindai. Ikatan nomor pengguna tetap tersimpan."
+          title="Putuskan bot WhatsApp?"
+          description="Bot berhenti mengirim notifikasi dan menjawab perintah sampai QR baru di-scan. Nomor pengguna yang sudah tertaut tetap tersimpan."
           busy={wa.unlinking}
         >
           {wa.unlinkError && (
-            <Alert tone="danger" title="Tautan gagal diputus">
+            <Alert tone="danger" title="Bot gagal diputus">
               {wa.unlinkError}
             </Alert>
           )}

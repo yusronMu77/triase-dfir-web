@@ -15,8 +15,8 @@ const DIGEST_STATUS: Record<string, { label: string; tone: Tone }> = {
 const NARRATION_MODE: Record<string, string> = {
   online: "Narasi model (online)",
   lokal: "Narasi model (lokal)",
-  replay: "Narasi ulang dari rekaman",
-  templat: "Narasi dari templat",
+  replay: "Narasi dari rekaman (replay)",
+  templat: "Narasi dari template",
 };
 
 export function digestStatusView(status: string): { label: string; tone: Tone } {

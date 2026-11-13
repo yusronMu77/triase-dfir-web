@@ -90,7 +90,7 @@ function SummaryCard({ summary }: { summary: CaseSummary }) {
       ),
     },
     { label: "Diminta oleh", value: summary.requestedBy },
-    { label: "Jendela waktu", value: summary.windowLabel },
+    { label: "Rentang waktu", value: summary.windowLabel },
     { label: "Dibuat", value: summary.createdAt },
     { label: "Diperbarui", value: summary.updatedAt },
   ];

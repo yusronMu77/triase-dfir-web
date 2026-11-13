@@ -29,7 +29,7 @@ describe("toMetricsView", () => {
 
   it("shows only figures the statistics endpoint returns", () => {
     const labels = view.summary.map((m) => m.label);
-    expect(labels).toEqual(["Total kartu", "SLA terlanggar", "Kartu kritis", "Umpan balik analis"]);
+    expect(labels).toEqual(["Total kartu", "SLA terlanggar", "Kartu kritis", "Feedback analis"]);
     expect(view.summary[0].value).toBe("40");
     expect(view.summary[1]).toMatchObject({ value: "8", meta: "20% dari total kartu" });
     expect(view.summary[2].value).toBe("4");
@@ -54,8 +54,8 @@ describe("toMetricsView", () => {
       ["Selesai", 5],
     ]);
     expect(view.feedback.map((d) => [d.label, d.value])).toEqual([
-      ["Benar", 3],
-      ["Salah positif", 1],
+      ["True positive", 3],
+      ["False positive", 1],
       ["Perlu DFIR", 0],
     ]);
   });

@@ -39,7 +39,7 @@ describe("useCaseDetail", () => {
     const { result } = renderHook(() => useCaseDetail("CS-20261112-001"), { wrapper });
     await waitFor(() => expect(result.current.data).not.toBeNull());
     expect(caseService.get).toHaveBeenCalledWith("CS-20261112-001", expect.any(AbortSignal));
-    expect(result.current.data?.statusLabel).toBe("Linimasa siap");
+    expect(result.current.data?.statusLabel).toBe("Timeline siap");
     expect(result.current.error).toBeNull();
   });
 

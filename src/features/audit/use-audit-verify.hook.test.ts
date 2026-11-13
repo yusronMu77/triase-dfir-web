@@ -56,7 +56,7 @@ describe("useAuditVerify", () => {
     const { result } = renderHook(() => useAuditVerify(10), { wrapper });
     act(() => result.current.verify());
     await waitFor(() => expect(result.current.view.kind).toBe("valid"));
-    expect(result.current.view).toMatchObject({ checked: 120, anchorText: "Cocok dengan jangkar" });
+    expect(result.current.view).toMatchObject({ checked: 120, anchorText: "Cocok dengan anchor" });
     expect(auditService.verifyJob).not.toHaveBeenCalled();
   });
 
@@ -87,7 +87,7 @@ describe("useAuditVerify", () => {
     expect(result.current.view).toMatchObject({
       firstBadSeq: 42,
       reasonText: "hash entri tidak cocok",
-      anchorText: "Tidak cocok dengan jangkar",
+      anchorText: "Tidak cocok dengan anchor",
     });
     expect(result.current.running).toBe(false);
     expect(auditService.verifyJob).toHaveBeenCalledWith("ver_9", expect.anything());

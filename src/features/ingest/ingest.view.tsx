@@ -24,15 +24,18 @@ export function IngestView() {
   const ingest = useIngestJob();
   return (
     <>
-      <PageHeader title="Unggah alert" description="Impor berkas Hayabusa JSON atau JSONL bertag ATT&CK" />
+      <PageHeader title="Unggah alert" description="Impor file Hayabusa JSON atau JSONL bertag ATT&CK" />
       <div className="a-stack">
-        <AstriaGuidance title="Berkas dibaca oleh layanan, bukan diunggah dari browser" expression="guide">
+        <AstriaGuidance
+          title="File dibaca langsung oleh layanan, bukan diunggah dari browser"
+          expression="guide"
+        >
           Masukkan path berkas yang sudah ada di folder impor server. Halaman ini tidak mengirim isi berkas.
           Progres diperbarui otomatis sampai impor selesai.
         </AstriaGuidance>
 
         <Card>
-          <CardHeader title="Impor alert" description="Adapter dan path berkas di server" />
+          <CardHeader title="Impor alert" description="Adapter dan path file di server" />
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -40,7 +43,7 @@ export function IngestView() {
             }}
           >
             <CardContent>
-              <Field label="Adapter" hint="Format berkas. Saat ini hanya Hayabusa.">
+              <Field label="Adapter" hint="Format file. Saat ini hanya Hayabusa.">
                 {(props) => (
                   <Select {...props} defaultValue="hayabusa" disabled={!ingest.canWrite || ingest.submitting}>
                     <option value="hayabusa">Hayabusa (JSON / JSONL)</option>
@@ -48,7 +51,7 @@ export function IngestView() {
                 )}
               </Field>
               <Field
-                label="Path berkas di server"
+                label="Path file di server"
                 required
                 hint="Relatif terhadap folder impor yang diizinkan. Tanpa '..'. Maksimal 300 karakter."
                 error={ingest.errors.pathRef}
@@ -67,15 +70,15 @@ export function IngestView() {
                 )}
               </Field>
               <Field
-                label="SHA-256 berkas (opsional)"
-                hint="Jika diisi, layanan menolak berkas yang tidak cocok. 64 karakter heksadesimal."
+                label="SHA-256 file (opsional)"
+                hint="Jika diisi, layanan menolak file yang tidak cocok. 64 karakter hex."
                 error={ingest.errors.expectedSha256}
               >
                 {(props) => (
                   <Input
                     {...props}
                     value={ingest.form.expectedSha256}
-                    placeholder="64 karakter heksadesimal"
+                    placeholder="64 karakter hex"
                     maxLength={64}
                     autoComplete="off"
                     spellCheck={false}
@@ -119,7 +122,7 @@ export function IngestView() {
               emptyState={
                 <EmptyState
                   title="Belum ada impor"
-                  description="Isi path berkas lalu mulai impor. Status akan tampil di sini."
+                  description="Isi path file lalu mulai impor. Status akan tampil di sini."
                 />
               }
             >
@@ -139,7 +142,7 @@ function JobDetails({ job, alreadyImported }: { job: JobView; alreadyImported: b
         <Badge tone={job.tone}>{job.statusLabel}</Badge> <small className="a-muted">ID job {job.jobId}</small>
       </div>
       {alreadyImported && (
-        <Alert tone="info" title="Berkas ini sudah pernah diimpor">
+        <Alert tone="info" title="File ini sudah pernah diimpor">
           Layanan menampilkan job yang sudah ada, tidak membuat impor baru.
         </Alert>
       )}
@@ -159,7 +162,7 @@ function JobDetails({ job, alreadyImported }: { job: JobView; alreadyImported: b
       )}
       {job.status === "failed" && (
         <Alert tone="danger" title="Impor gagal">
-          {job.errorText ?? "Layanan tidak dapat menyelesaikan impor. Periksa berkas lalu coba lagi."}
+          {job.errorText ?? "Layanan tidak dapat menyelesaikan impor. Periksa file lalu coba lagi."}
         </Alert>
       )}
       <div className="a-stat-grid">

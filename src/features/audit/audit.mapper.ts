@@ -44,7 +44,7 @@ export function toAuditRow(entry: AuditEntry): AuditRowView {
 }
 
 const REASON_TEXT: Record<string, string> = {
-  nomor_urut_berlubang: "nomor urut berlubang",
+  nomor_urut_berlubang: "nomor urut loncat",
   prev_hash_tidak_cocok: "hash sebelumnya tidak cocok",
   payload_hash_tidak_cocok: "hash isi tidak cocok",
   entry_hash_tidak_cocok: "hash entri tidak cocok",
@@ -65,8 +65,8 @@ export type VerifyView =
   | { kind: "failed"; checked: number };
 
 function anchorText(match: boolean | null): string {
-  if (match === null) return "Tidak ada jangkar dalam rentang ini";
-  return match ? "Cocok dengan jangkar" : "Tidak cocok dengan jangkar";
+  if (match === null) return "Tidak ada anchor di rentang ini";
+  return match ? "Cocok dengan anchor" : "Tidak cocok dengan anchor";
 }
 
 /** Turns a `VerifyResult` into the state the screen shows. `null` means no verification has been started. */

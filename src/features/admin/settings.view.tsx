@@ -9,7 +9,7 @@ export function SettingsView() {
   const form = useConfigForm("settings");
   return (
     <>
-      <PageHeader title="Pengaturan" description="Jadwal, tautan publik, perintah chat, dan retensi data." />
+      <PageHeader title="Pengaturan" description="Jadwal, URL publik, perintah chat, dan retensi data." />
       <QueryBoundary
         loading={form.loading}
         error={form.error}

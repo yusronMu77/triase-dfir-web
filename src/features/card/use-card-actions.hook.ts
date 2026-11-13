@@ -29,7 +29,7 @@ const TOAST_TITLE: Record<CardAction, string> = {
   owner: "Pemilik diperbarui",
   priority: "Prioritas diperbarui",
   comment: "Komentar terkirim",
-  feedback: "Umpan balik tersimpan",
+  feedback: "Feedback tersimpan",
   deepDive: "Analisis DFIR diminta",
 };
 
@@ -196,7 +196,7 @@ export function useCardActions(card: CardSummary | null) {
   async function sendFeedback(form: FormData): Promise<boolean> {
     if (!card) return false;
     const label = pick(formText(form, "label"), FEEDBACK);
-    if (!label) return fail("feedback", "Pilih jenis umpan balik.");
+    if (!label) return fail("feedback", "Pilih jenis feedback.");
     setProblem(null);
     try {
       await feedback.mutateAsync({

@@ -56,7 +56,7 @@ function DigestBody({ digest, doc }: { digest: DigestDetail; doc: ReturnType<typ
             <EntityRow label="Dijadwalkan" value={digest.dijadwalkanPada} />
             <EntityRow label="Dijalankan" value={digest.dijalankanPada} />
             <EntityRow label="Mode narasi" value={digest.modeNarasi} />
-            <EntityRow label="Versi templat" value={digest.versiTemplat ?? "-"} />
+            <EntityRow label="Versi template" value={digest.versiTemplat ?? "-"} />
             <EntityRow label="SHA-256" value={<span className="a-mono">{digest.sha256 ?? "-"}</span>} />
           </div>
         </CardContent>

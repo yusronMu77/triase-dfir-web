@@ -131,7 +131,7 @@ describe("useConfigForm", () => {
     expect(mocks.putSecret).toHaveBeenCalledWith("model.api_key", "rahasia-uji-1");
     expect(JSON.stringify(result.current)).not.toContain("rahasia-uji-1");
     expect(mocks.toast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: "Rahasia model.api_key tersimpan" }),
+      expect.objectContaining({ title: "Secret model.api_key tersimpan" }),
     );
   });
 
@@ -143,7 +143,7 @@ describe("useConfigForm", () => {
     expect(mocks.putSecret).not.toHaveBeenCalled();
     expect(result.current.secretError).toEqual({
       key: "model.api_key",
-      message: "Isi nilai rahasia terlebih dahulu.",
+      message: "Isi nilai secret dulu.",
     });
   });
 
@@ -158,7 +158,7 @@ describe("useConfigForm", () => {
     });
     expect(result.current.reauth.open).toBe(true);
     expect(mocks.toast).not.toHaveBeenCalledWith(
-      expect.objectContaining({ title: "Rahasia model.api_key tersimpan" }),
+      expect.objectContaining({ title: "Secret model.api_key tersimpan" }),
     );
 
     await act(async () => {

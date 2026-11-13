@@ -375,7 +375,7 @@ function Showcase() {
                     <SLAChip state="breached">Lewat 4 mnt</SLAChip>
                   </div>
                   <div className="a-row">
-                    <VerifierBadge result="pass">Lolos pemeriksa 5/5</VerifierBadge>
+                    <VerifierBadge result="pass">Lolos verifier 5/5</VerifierBadge>
                     <VerifierBadge result="fail" />
                     <NarrationBadge />
                   </div>
@@ -399,7 +399,7 @@ function Showcase() {
               </div>
               <Example
                 title="Tabel universal"
-                description="Kolom bertipe, urutan naik/turun, keadaan kosong, memuat dan galat."
+                description="Kolom bertipe, urutan naik/turun, keadaan kosong, loading, dan error."
               >
                 <DataTable {...listProps} caption="Contoh tabel kasus" />
               </Example>
@@ -469,7 +469,7 @@ function Showcase() {
                   setFile(null);
                   setUploadState("idle");
                 }}
-                summary="Simulasi triase selesai. Berkas tidak dikirim ke layanan."
+                summary="Simulasi triase selesai. File tidak dikirim ke layanan."
               />
               <Checkbox
                 label="Simulasikan unggah gagal"
@@ -547,7 +547,7 @@ function Showcase() {
                   <RouteProgress />
                   <SkeletonText />
                   <ol className="a-stack">
-                    <StepItem step={1} title="Validasi berkas" state="complete">
+                    <StepItem step={1} title="Validasi file" state="complete">
                       Format dikenali.
                     </StepItem>
                     <StepItem step={2} title="Triase deterministik" state="active">

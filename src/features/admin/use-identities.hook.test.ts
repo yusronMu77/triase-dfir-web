@@ -75,7 +75,7 @@ describe("useIdentities", () => {
     });
     expect(mocks.revoke).toHaveBeenCalledWith("idn_1");
     expect(result.current.target).toBeNull();
-    expect(mocks.toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Ikatan kanal dicabut" }));
+    expect(mocks.toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Akun diputus dari kanal" }));
   });
 
   it("keeps the dialog open with the error when revoking fails", async () => {

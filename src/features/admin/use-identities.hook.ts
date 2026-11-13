@@ -45,7 +45,7 @@ export function useIdentities() {
       await identitiesService.revoke(target.id);
       await queryClient.invalidateQueries({ queryKey: queryKeys.identities });
       toast({
-        title: "Ikatan kanal dicabut",
+        title: "Akun diputus dari kanal",
         description: `Notifikasi ke ${target.channelName} dihentikan.`,
       });
       setTarget(null);

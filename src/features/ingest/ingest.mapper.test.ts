@@ -69,7 +69,7 @@ describe("toJobView", () => {
   it("shows the error code of a failed job and no progress", () => {
     const view = toJobView({ ...base, status: "failed", error_code: "JOB_GAGAL" });
     expect(view.progress).toBeNull();
-    expect(view.errorText).toBe("Kode galat: JOB_GAGAL");
+    expect(view.errorText).toBe("Kode error: JOB_GAGAL");
     expect(view.tone).toBe("danger");
   });
 
@@ -98,7 +98,7 @@ describe("buildIngestRequest", () => {
   it("requires a path", () => {
     expect(buildIngestRequest(EMPTY_INGEST_FORM)).toEqual({
       ok: false,
-      errors: { pathRef: "Isi path berkas di server." },
+      errors: { pathRef: "Isi path file di server." },
     });
   });
 
