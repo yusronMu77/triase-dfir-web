@@ -19,8 +19,8 @@ import type { useCardActions } from "./use-card-actions.hook";
 export type CardActions = ReturnType<typeof useCardActions>;
 
 const feedbackOptions = [
-  { value: "benar", label: "Benar" },
-  { value: "salah_positif", label: "Salah positif" },
+  { value: "benar", label: "True positive" },
+  { value: "salah_positif", label: "False positive" },
   { value: "perlu_dfir", label: "Perlu analisis DFIR" },
 ] as const;
 
@@ -218,7 +218,7 @@ export function CardActionsView({
           </Card>
 
           <Card>
-            <CardHeader title="Umpan balik analis" description="Penilaian Anda terhadap alert ini." />
+            <CardHeader title="Feedback analis" description="Penilaian Anda terhadap alert ini." />
             <CardContent>
               <form
                 className="a-stack"

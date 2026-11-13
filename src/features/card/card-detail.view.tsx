@@ -172,16 +172,16 @@ function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail;
           </Card>
 
           <Card>
-            <CardHeader title="Penjelas alert" description="Dari katalog penjelasan yang aktif" />
+            <CardHeader title="Penjelasan alert" description="Dari katalog penjelasan yang aktif" />
             <CardContent>
               {penjelasMissing && (
-                <Alert tone="warning" title="Penjelas belum tersedia">
+                <Alert tone="warning" title="Penjelasan belum tersedia">
                   Layanan konfigurasi belum dapat dihubungi. Kartu tetap dapat ditinjau.
                 </Alert>
               )}
               {!penjelasMissing && penjelas.length === 0 && (
                 <EmptyState
-                  title="Belum ada penjelas"
+                  title="Belum ada penjelasan"
                   description="Aturan kartu ini belum punya penjelasan di katalog aktif."
                 />
               )}

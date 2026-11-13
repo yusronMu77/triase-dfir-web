@@ -11,7 +11,7 @@ export const isCaseId = (value: string): boolean => CASE_ID_PATTERN.test(value);
 const CASE_STATUS: Record<string, { label: string; tone: Tone }> = {
   diminta: { label: "Diminta", tone: "info" },
   mengumpulkan: { label: "Mengumpulkan bukti", tone: "info" },
-  linimasa_siap: { label: "Linimasa siap", tone: "info" },
+  linimasa_siap: { label: "Timeline siap", tone: "info" },
   draf_sebagian: { label: "Draf sebagian", tone: "warning" },
   gagal: { label: "Gagal", tone: "danger" },
 };

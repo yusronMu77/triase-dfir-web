@@ -31,7 +31,7 @@ export function useWhatsAppLink() {
     try {
       await channelsService.unlinkWhatsapp();
       setConfirming(false);
-      toast({ title: "Tautan bot WhatsApp diputus", description: "Pindai QR baru untuk menautkan lagi." });
+      toast({ title: "Bot WhatsApp terputus", description: "Scan QR baru untuk menghubungkan lagi." });
       await queryClient.invalidateQueries({ queryKey: queryKeys.whatsappLink });
     } catch (error) {
       setUnlinkError(describeError(error));

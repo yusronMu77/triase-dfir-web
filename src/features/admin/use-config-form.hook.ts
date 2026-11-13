@@ -94,7 +94,7 @@ export function useConfigForm(group: SettingGroup) {
         pendingSecret.current = null;
         await queryClient.invalidateQueries({ queryKey: queryKeys.config });
         toast({
-          title: `Rahasia ${key} tersimpan`,
+          title: `Secret ${key} tersimpan`,
           description: "Nilai tidak ditampilkan lagi setelah disimpan.",
         });
       } catch (error) {
@@ -118,11 +118,11 @@ export function useConfigForm(group: SettingGroup) {
     async (key: string, form: FormData) => {
       const value = String(form.get("value") ?? "");
       if (value.trim() === "") {
-        setSecretError({ key, message: "Isi nilai rahasia terlebih dahulu." });
+        setSecretError({ key, message: "Isi nilai secret dulu." });
         return;
       }
       if (value.length > 4096) {
-        setSecretError({ key, message: "Nilai rahasia terlalu panjang (maksimal 4096 karakter)." });
+        setSecretError({ key, message: "Nilai secret terlalu panjang (maksimal 4096 karakter)." });
         return;
       }
       await runSecret(key, value);
@@ -151,7 +151,7 @@ export function useConfigForm(group: SettingGroup) {
         await configService.putSecret(pending.key, pending.value);
         await queryClient.invalidateQueries({ queryKey: queryKeys.config });
         toast({
-          title: `Rahasia ${pending.key} tersimpan`,
+          title: `Secret ${pending.key} tersimpan`,
           description: "Nilai tidak ditampilkan lagi setelah disimpan.",
         });
       } catch (error) {

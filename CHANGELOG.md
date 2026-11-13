@@ -11,6 +11,7 @@
 
 ### Changed
 
+- UI wording reads as natural Indonesian: common technical terms stay in English (feedback, true/false positive, anchor, hash chain, secret, file, env var, database, template, timeline, error, hex, scan QR) instead of literal translations (umpan balik, salah positif, jangkar, rantai, rahasia, berkas, variabel lingkungan, basis data, templat, linimasa, galat, heksadesimal, pindai). Identity bindings read as linked accounts; "Sesimu" becomes "Sesi Anda".
 - The component gallery moved from `/` to `/components`; `/` is now the home screen. Queue state moved into `use-card-queue.hook.ts`.
 
 ### Added (earlier)

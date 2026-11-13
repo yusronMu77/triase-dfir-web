@@ -50,7 +50,7 @@ export function IdentitiesView() {
       <div className="showcase-detail-grid">
         <div className="a-stack">
           {identities.unavailable ? (
-            <UnavailableNotice title="Daftar ikatan belum tersedia">
+            <UnavailableNotice title="Daftar akun tertaut belum tersedia">
               Fitur ini belum tersedia di layanan gateway. Daftar akan muncul setelah layanan menyediakannya.
             </UnavailableNotice>
           ) : (
@@ -60,7 +60,7 @@ export function IdentitiesView() {
               onRetry={identities.retry}
               empty={identities.empty}
               emptyState={
-                <Alert tone="info" title="Belum ada ikatan kanal">
+                <Alert tone="info" title="Belum ada akun yang tertaut ke kanal">
                   Hubungkan akun chat dengan kode pairing di samping.
                 </Alert>
               }
@@ -69,7 +69,7 @@ export function IdentitiesView() {
             </QueryBoundary>
           )}
           {identities.revokeError && !identities.target && (
-            <Alert tone="danger" title="Ikatan gagal dicabut">
+            <Alert tone="danger" title="Akun gagal diputus dari kanal">
               {identities.revokeError}
             </Alert>
           )}
@@ -85,12 +85,12 @@ export function IdentitiesView() {
         }}
       >
         <DialogContent
-          title="Cabut ikatan kanal?"
+          title="Putuskan akun dari kanal?"
           description={`Notifikasi ke ${identities.target?.channelName ?? "kanal"} untuk akun ini dihentikan. Akun bisa dihubungkan lagi dengan kode pairing baru.`}
           busy={identities.revoking}
         >
           {identities.revokeError && (
-            <Alert tone="danger" title="Ikatan gagal dicabut">
+            <Alert tone="danger" title="Akun gagal diputus dari kanal">
               {identities.revokeError}
             </Alert>
           )}

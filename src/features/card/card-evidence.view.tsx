@@ -16,7 +16,10 @@ export function CardEvidenceView({ state }: { state: EvidenceState }) {
   const empty = !!state.data && state.data.evidence.length === 0 && state.data.tidak_ditemukan.length === 0;
   return (
     <Card>
-      <CardHeader title="Bukti" description="Ringkasan tersanitasi. Isi mentah tidak ditampilkan." />
+      <CardHeader
+        title="Bukti"
+        description="Ringkasan yang sudah disanitasi. Data mentah tidak ditampilkan."
+      />
       <CardContent>
         <QueryBoundary
           loading={state.loading}

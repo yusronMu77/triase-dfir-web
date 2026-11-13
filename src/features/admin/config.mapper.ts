@@ -18,16 +18,16 @@ const SCOPE_LABELS: Readonly<Record<string, string>> = {
   score: "Ambang skor",
   ingest: "Impor data",
   schedule: "Jadwal",
-  api: "Tautan publik",
+  api: "URL publik",
   chat: "Perintah chat",
   retention: "Retensi data",
 };
 
 export const SOURCE_LABELS: Readonly<Record<SettingSource, string>> = {
   bawaan: "Bawaan",
-  berkas: "Berkas",
-  database: "Basis data",
-  env: "Variabel lingkungan",
+  berkas: "File",
+  database: "Database",
+  env: "Env var",
 };
 
 export type EditKind = "bool" | "number" | "text" | "json";

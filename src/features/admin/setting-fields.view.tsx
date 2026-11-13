@@ -56,7 +56,7 @@ function SettingField({ row, form }: { row: SettingRow; form: ConfigFormModel })
     >
       <div className="a-row">
         <Badge tone={SOURCE_TONES[row.source]}>{row.sourceLabel}</Badge>
-        {row.locked && <Badge tone="warning">Dikunci variabel lingkungan</Badge>}
+        {row.locked && <Badge tone="warning">Dikunci env var</Badge>}
         <span className="a-muted">
           Versi {row.version} · diubah {row.updatedLabel}
         </span>
@@ -124,8 +124,8 @@ export function SecretFields({ form }: { form: ConfigFormModel }) {
   return (
     <Card>
       <CardHeader
-        title="Rahasia"
-        description="Tulis-saja. Nilai tidak pernah ditampilkan lagi; yang terlihat hanya status terisi."
+        title="Secret"
+        description="Write-only. Nilai tidak pernah ditampilkan lagi; yang terlihat hanya sudah diisi atau belum."
       />
       <CardContent className="a-stack">
         {form.secrets.map((secret) => (
@@ -168,7 +168,7 @@ function SecretForm({ secret, form }: { secret: SecretRow; form: ConfigFormModel
         )}
       </Field>
       {form.secretError?.key === secret.key && (
-        <Alert tone="danger" title="Rahasia gagal disimpan">
+        <Alert tone="danger" title="Secret gagal disimpan">
           {form.secretError.message}
         </Alert>
       )}
@@ -199,7 +199,7 @@ export function ReauthDialog({ form }: { form: ConfigFormModel }) {
     >
       <DialogContent
         title="Konfirmasi kata sandi"
-        description="Menulis rahasia butuh konfirmasi kata sandi yang baru. Rahasia yang tertunda dikirim setelah konfirmasi berhasil."
+        description="Menyimpan secret perlu konfirmasi ulang kata sandi. Secret yang tertunda dikirim setelah konfirmasi berhasil."
         busy={reauth.busy}
       >
         <form

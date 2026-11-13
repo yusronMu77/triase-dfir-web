@@ -36,12 +36,12 @@ export function AuditView() {
     <>
       <PageHeader
         title="Audit"
-        description="Riwayat tindakan dengan rantai hash"
+        description="Riwayat tindakan, dikunci dengan hash chain"
         action={
           verify.canVerify ? (
             <Button onClick={verify.verify} disabled={verify.running}>
               <Icon name="shield-check" size={16} />
-              {verify.running ? "Memeriksa…" : "Verifikasi rantai"}
+              {verify.running ? "Memeriksa…" : "Verifikasi integritas"}
             </Button>
           ) : undefined
         }

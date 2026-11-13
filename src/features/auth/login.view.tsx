@@ -13,7 +13,7 @@ export function LoginView({ sessionExpired = false }: { sessionExpired?: boolean
       {error ? (
         <Alert tone="danger" title={error} id="login-error" />
       ) : sessionExpired ? (
-        <Alert tone="warning" title="Sesimu berakhir">
+        <Alert tone="warning" title="Sesi Anda berakhir">
           Masuk lagi untuk melanjutkan.
         </Alert>
       ) : null}

@@ -56,10 +56,10 @@ export function MetricsView() {
                     data={view.byStatus}
                   />
                   <MetricChart
-                    title="Umpan balik analis"
+                    title="Feedback analis"
                     description="Penilaian analis terhadap alert"
                     data={view.feedback}
-                    unit="umpan balik"
+                    unit="feedback"
                   />
                 </div>
               </>

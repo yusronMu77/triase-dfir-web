@@ -86,13 +86,13 @@ describe("toVerifyView", () => {
       checked: 120,
       fromSeq: 1,
       toSeq: null,
-      anchorText: "Cocok dengan jangkar",
+      anchorText: "Cocok dengan anchor",
     });
   });
 
   it("says when no anchor falls inside the range", () => {
     const view = toVerifyView({ ...verify, anchor_match: null });
-    expect(view.kind === "valid" && view.anchorText).toBe("Tidak ada jangkar dalam rentang ini");
+    expect(view.kind === "valid" && view.anchorText).toBe("Tidak ada anchor di rentang ini");
   });
 
   it("names the first broken entry and the reason", () => {
@@ -109,7 +109,7 @@ describe("toVerifyView", () => {
       checked: 120,
       firstBadSeq: 42,
       reasonText: "hash sebelumnya tidak cocok",
-      anchorText: "Tidak cocok dengan jangkar",
+      anchorText: "Tidak cocok dengan anchor",
     });
   });
 

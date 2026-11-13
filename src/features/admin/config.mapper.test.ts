@@ -72,7 +72,7 @@ describe("toConfigRows", () => {
     const row = toConfigRows(items, "settings").settings.find((r) => r.key === "chat.allow_t2");
     expect(row).toMatchObject({
       source: "env",
-      sourceLabel: "Variabel lingkungan",
+      sourceLabel: "Env var",
       locked: true,
       editKind: "bool",
       draftText: "false",

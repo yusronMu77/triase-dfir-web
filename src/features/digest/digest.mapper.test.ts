@@ -59,7 +59,7 @@ describe("toDigestDetail", () => {
     const view = toDigestDetail(detail);
     expect(view.dijadwalkanPada).toBe("2026-11-12 07:00:00 WIB");
     expect(view.dijalankanPada).toBe("2026-11-12 07:01:02 WIB");
-    expect(view.modeNarasi).toBe("Narasi dari templat");
+    expect(view.modeNarasi).toBe("Narasi dari template");
     expect(view.sha256).toBe("b".repeat(64));
     expect(view.percobaan).toBe(1);
   });

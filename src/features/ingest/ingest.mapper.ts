@@ -81,7 +81,7 @@ export function toJobView(job: IngestJob): JobView {
       recordNo: sample.record_no,
       code: sample.code,
     })),
-    errorText: job.error_code ? `Kode galat: ${job.error_code}` : null,
+    errorText: job.error_code ? `Kode error: ${job.error_code}` : null,
     startedAt: job.started_at,
     finishedAt: job.finished_at,
   };
@@ -104,14 +104,14 @@ export function buildIngestRequest(
   const pathRef = form.pathRef.trim();
   const sha = form.expectedSha256.trim().toLowerCase();
   if (pathRef.length === 0) {
-    errors.pathRef = "Isi path berkas di server.";
+    errors.pathRef = "Isi path file di server.";
   } else if (pathRef.length > 300) {
     errors.pathRef = "Path maksimal 300 karakter.";
   } else if (pathRef.split(/[\\/]/).includes("..") || pathRef.includes("\0")) {
     errors.pathRef = "Path tidak boleh memuat '..'.";
   }
   if (sha.length > 0 && !/^[0-9a-f]{64}$/.test(sha)) {
-    errors.expectedSha256 = "SHA-256 harus 64 karakter heksadesimal.";
+    errors.expectedSha256 = "SHA-256 harus 64 karakter hex.";
   }
   if (Object.keys(errors).length > 0) return { ok: false, errors };
   return {

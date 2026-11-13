@@ -78,9 +78,7 @@ describe("useWhatsAppLink", () => {
 
     expect(mocks.unlinkWhatsapp).toHaveBeenCalledOnce();
     expect(hook.result.current.confirming).toBe(false);
-    expect(mocks.toast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: "Tautan bot WhatsApp diputus" }),
-    );
+    expect(mocks.toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Bot WhatsApp terputus" }));
     await waitFor(() => expect(hook.result.current.link).toEqual(unlinked));
   });
 
