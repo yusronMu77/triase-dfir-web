@@ -2,10 +2,14 @@
 # Action dan alat dipin dengan SHA, digest, atau versi tepat (pelajaran insiden Trivy); tidak ada tag mutabel.
 name: ci
 
+# Manual only since 2026-11-13: GitHub Actions minutes for the private repos ran out.
+# To restore the automatic triggers, uncomment the lines under `on:`.
+# Local equivalent (in triase-dfir): pwsh -File scripts/ci-local/ci-local.ps1 <folder>
+# On GitHub: gh workflow run ci -R yusronMu77/<repo> --ref <branch>
 on:
-  pull_request:
-  push:
-    branches: [main]
+  # pull_request:
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:

@@ -3,12 +3,15 @@
 # Needs repo secret BOARD_TOKEN (classic PAT, scopes `project` and `repo`).
 name: board-dispatch
 
+# Manual only since 2026-11-13 (Actions minutes quota). To restore, uncomment the lines under `on:`.
+# Local equivalent, in triase-dfir: pwsh -File scripts/board-sync/board-sync-local.ps1 -Apply
 on:
-  issues:
-    types: [opened, closed, reopened]
-  pull_request:
-    types: [opened, reopened, ready_for_review, converted_to_draft, closed]
-  create:
+  # issues:
+  #   types: [opened, closed, reopened]
+  # pull_request:
+  #   types: [opened, reopened, ready_for_review, converted_to_draft, closed]
+  # create:
+  workflow_dispatch:
 
 permissions: {}
 
