@@ -4,6 +4,7 @@ import type {
   ChannelsResponse,
   ChannelTestResult,
   PutChannelPolicyRequest,
+  WhatsAppLink,
 } from "./channels.types";
 
 const channelPath = (channelId: string) => encodeURIComponent(channelId);
@@ -18,4 +19,10 @@ export const channelsService = {
 
   /** `POST /channels/{channel_id}/test`: sends a test message through the gateway. */
   test: (channelId: string) => api.post<ChannelTestResult>(`/channels/${channelPath(channelId)}/test`),
+
+  /** `GET /channels/whatsapp/link`: link status of the WhatsApp bot and, while unlinked, the QR to scan. */
+  whatsappLink: (signal?: AbortSignal) => api.get<WhatsAppLink>("/channels/whatsapp/link", undefined, signal),
+
+  /** `POST /channels/whatsapp/link/logout`: unlinks the bot; the bridge then shows a new QR. */
+  unlinkWhatsapp: () => api.post<{ status: string }>("/channels/whatsapp/link/logout"),
 };

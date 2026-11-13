@@ -4,6 +4,7 @@
 
 ### Added
 
+- WhatsApp bot card on the channels page (admin): link status with the masked number, the QR to scan while unlinked (polled every 5 seconds, every 30 seconds once linked), and unlinking after a confirmation dialog. Uses `GET /channels/whatsapp/link` and `POST /channels/whatsapp/link/logout`; hidden when the gateway has no WhatsApp bridge (404).
 - Screens L0-L9 and the admin pages (login, home, digests, handover, upload, metrics, DFIR cases, configuration, channels, identities, deliveries, settings, users, audit) in feature folders, with loading, error and not-found boundaries.
 - Vitest hook tests and architecture tests (`test:unit`, `test:arch`; run under bun and npm).
 - TEMPLATE marker on card and case detail (narration from template, not a model).
