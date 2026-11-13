@@ -46,3 +46,14 @@ export type ChannelsResponse = {
 
 /** Unverified shape: the gateway has no `/channels/{id}/test` route in its contract yet. */
 export type ChannelTestResult = { ok?: boolean; detail?: string };
+
+/**
+ * Body of `GET /api/v1/channels/whatsapp/link` (gateway `/internal/v1/whatsapp/link`). `qr` is a PNG data URL only
+ * while the bot waits to be scanned; the number is always masked.
+ */
+export type WhatsAppLink = {
+  terhubung: boolean;
+  perlu_scan: boolean;
+  nomor_tersamar: string | null;
+  qr: string | null;
+};

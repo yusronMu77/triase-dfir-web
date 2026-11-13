@@ -24,6 +24,7 @@ export const queryKeys = {
   audit: { all: ["audit"] as const, list: (filters: object) => ["audit", "list", filters] as const },
   config: ["config"] as const,
   channels: ["channels"] as const,
+  whatsappLink: ["channels", "whatsapp-link"] as const,
   outbox: (filters: object) => ["outbox", filters] as const,
   identities: ["identities"] as const,
 };

@@ -20,6 +20,7 @@ import {
   type TestOutcome,
 } from "./channels.mapper";
 import { useChannels } from "./use-channels.hook";
+import { WhatsAppLinkCard } from "./whatsapp-link.view";
 
 const TRANSPORT_TONES = { aktif: "success", nonaktif: "danger", "tidak diketahui": "neutral" } as const;
 
@@ -45,6 +46,7 @@ export function ChannelsView() {
             </Alert>
           )}
           {channels.outcome && <TestResult outcome={channels.outcome} />}
+          {channels.canAdmin && <WhatsAppLinkCard />}
           {channels.rows.map((row) => (
             <ChannelCard key={row.channelId} row={row} channels={channels} />
           ))}
