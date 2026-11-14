@@ -9,6 +9,10 @@
 - Vitest hook tests and architecture tests (`test:unit`, `test:arch`; run under bun and npm).
 - TEMPLATE marker on card and case detail (narration from template, not a model).
 
+### Fixed
+
+- Responses no longer name the server stack: `poweredByHeader: false` removes `X-Powered-By: Next.js` (e2e WEB-DEMO-002).
+
 ### Changed
 
 - UI wording reads as natural Indonesian: common technical terms stay in English (feedback, true/false positive, anchor, hash chain, secret, file, env var, database, template, timeline, error, hex, scan QR) instead of literal translations (umpan balik, salah positif, jangkar, rantai, rahasia, berkas, variabel lingkungan, basis data, templat, linimasa, galat, heksadesimal, pindai). Identity bindings read as linked accounts; "Sesimu" becomes "Sesi Anda".

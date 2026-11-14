@@ -2,6 +2,8 @@ import path from 'node:path';
 import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Do not name the server stack in responses (X-Powered-By: Next.js); e2e WEB-DEMO-002.
+  poweredByHeader: false,
   transpilePackages: ['@astria/ui'],
   turbopack: {
     root: path.resolve(import.meta.dirname, '..'),
