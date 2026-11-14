@@ -97,11 +97,12 @@ Native Penpot HTML/CSS for 174 variants and all original token values are in `..
 | Live updates | `src/features/shell/use-live-updates.hook.ts` | `GET /stream` (SSE) invalidates cards, ingest jobs and digests; polling remains the fallback for jobs. |
 | Screens | `use-*.hook.ts` + `*.view.tsx` | Every data screen shows loading, error with retry, empty and success through `QueryBoundary`. 403 and 404 say what happened and offer no retry. |
 
+Upload alerts (`/upload`) sends only a path relative to the ingest import folder (`/data/import`; `samples/data` in devenv and in the demo), for example `chains/svc-backup.jsonl`. The api forwards it to ingest `POST /svc/v1/imports` (contract `contracts/openapi/ingest-internal.yaml`; fixed in api#12).
+
 Configuration (`.env.example`): leave `NEXT_PUBLIC_API_BASE_URL` empty for same-origin calls through Caddy. Without Caddy, set `ASTRIA_API_ORIGIN` (server-side) and Next rewrites `/api/v1/*` to the api; the api's `ASTRIA_PUBLIC_ORIGIN` must equal the origin of the browser tab.
 
 Known gaps (each is upstream, not in `web`; see `HANDOFF.md`):
 
-- The api proxies ingest to `/svc/v1/ingest/jobs`, but the ingest service serves `/svc/v1/imports`; upload and job status return 404 until one side changes. `expected_sha256` is rejected by ingest (`extra="forbid"`).
 - Handover (`/svc/v1/handover`) does not exist in `scheduler`; the screen reports it as unavailable.
 - `GET /cards/{id}/evidence` reads `evidence`, but ingest returns `items` and `not_found`, so the evidence list is empty. `alerts:batch` does not exist in ingest.
 - Gateway has no `/internal/v1/outbox`, `/identities` or `/channels/{id}/test`; the delivery log, channel bindings and channel test show "not available".
