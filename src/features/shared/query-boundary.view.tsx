@@ -76,3 +76,12 @@ export function ErrorPanel({ error, onRetry }: { error: unknown; onRetry?: () =>
     </Alert>
   );
 }
+
+/** The 403 screen of a route the session may not open. Same title as an api 403 in `ErrorPanel`. */
+export function ForbiddenPanel() {
+  return (
+    <Alert tone="danger" title="Akses ditolak">
+      Peran Anda tidak memiliki akses ke halaman ini.
+    </Alert>
+  );
+}

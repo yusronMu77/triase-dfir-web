@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- `/handover`, `/cases` (and `/cases/[id]`) and `/users` show "Akses ditolak" instead of the screen when the session lacks `handover`, `cases:read` or `identities:admin`. The guard reads the permissions from `GET /auth/me` in the shell layout (`features/session/route-access.ts`), so it also covers screens that make no api call on load; the sidebar drops entries the guard would refuse (web#15).
 - Responses no longer name the server stack: `poweredByHeader: false` removes `X-Powered-By: Next.js` (e2e WEB-DEMO-002).
 
 ### Changed

@@ -1,19 +1,18 @@
 "use client";
+import { astriaNavigation } from "@astria/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { logout } from "../../lib/auth-api";
 import { queryKeys } from "../../lib/query/query-keys";
 import { platformService } from "../../services/platform.service";
 import type { Health } from "../../services/platform.types";
+import { canOpenRoute, routeSection } from "../session/route-access";
 import { useSession } from "../session/use-session.hook";
 import { useLiveUpdates } from "./use-live-updates.hook";
 
 /** First path segment, so `/cards/IC-1` highlights `/cards` in the sidebar. */
-export function activeSection(pathname: string) {
-  const [first] = pathname.split("/").filter(Boolean);
-  return first ? `/${first}` : "/";
-}
+export const activeSection = routeSection;
 
 /** Text and tone of the service chip from `GET /health` (`hijau`, `kuning`, `merah` per service). */
 export function describeHealth(health: Health | undefined, failed: boolean) {
@@ -38,6 +37,9 @@ export function useShellState() {
     enabled: !!session.user,
   });
   useLiveUpdates(!!session.user);
+  const { can } = session;
+  // The menu never links to a screen the route guard would refuse.
+  const navigation = useMemo(() => astriaNavigation.filter((item) => canOpenRoute(item.href, can)), [can]);
   const [signOutError, setSignOutError] = useState("");
   const signingOut = useRef(false);
   const navigate = useCallback((href: string) => router.push(href), [router]);
@@ -60,6 +62,9 @@ export function useShellState() {
     session,
     status: describeHealth(health.data, health.isError),
     activePath: activeSection(pathname),
+    /** True when the session lacks the permission of the current route; the layout then shows the 403 screen. */
+    forbidden: !canOpenRoute(pathname, can),
+    navigation,
     navigate,
     signOut,
     signOutError,

@@ -19,7 +19,11 @@ export function useSession() {
     queryFn: ({ signal }) => authService.me(signal),
     staleTime: 60_000,
   });
-  const permissions = useMemo(() => new Set(query.data?.permissions ?? []), [query.data]);
+  // A malformed `permissions` grants nothing (fail closed) instead of throwing.
+  const permissions = useMemo(() => {
+    const list: unknown = query.data?.permissions;
+    return new Set<unknown>(Array.isArray(list) ? list : []);
+  }, [query.data]);
   const can = useCallback((permission: Permission) => permissions.has(permission), [permissions]);
   return {
     user: query.data ?? null,
