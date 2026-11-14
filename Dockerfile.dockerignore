@@ -1,0 +1,13 @@
+# Konteks build web/Dockerfile adalah root workspace: kirim hanya web/ dan ui/ tanpa hasil build lokal.
+*
+!web/
+!ui/
+**/node_modules
+**/.next
+**/.git
+**/coverage
+**/test-results
+**/playwright-report
+**/*.tsbuildinfo
+**/.env
+**/.env.*
