@@ -42,3 +42,28 @@ export type CaseTimelinePage = {
 };
 
 export type CaseTimelineQuery = { cursor?: string; limit?: number };
+
+/**
+ * One entry of `GET /cases/{case_id}/custody`, from dfir `custody.Entri` (hash-chained, append-only).
+ * `entry_hash = sha256(prev_hash + canonical_json(content))`; the first entry chains from a per-case genesis hash.
+ */
+export type CustodyEntryDto = {
+  case_id: string;
+  seq: number;
+  /** UTC ISO-8601 with microseconds and `Z`; this exact text is hashed, so it is displayed as received. */
+  ts: string;
+  actor: string;
+  action: string;
+  artifact_id: string | null;
+  sha256: string | null;
+  detail: string | null;
+  prev_hash: string;
+  entry_hash: string;
+};
+
+/** `GET /cases/{case_id}/custody`. `chain_ok` is computed by dfir over every entry; the web never recomputes it. */
+export type CaseCustodyDto = {
+  case_id: string;
+  entries: CustodyEntryDto[];
+  chain_ok: boolean;
+};

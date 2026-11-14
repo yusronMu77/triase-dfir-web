@@ -68,6 +68,16 @@ export type CardDocument = {
     temuan_korelasi?: string[];
     bukti?: { id: string; sha256?: string }[];
   };
+  /**
+   * Narrative after the verifier policy (contracts `narration.completed` `Narasi`, verifier `policy.py`): with
+   * `LULUS` every claim passed, with `SEBAGIAN` the failed claims were removed, with `TEMPLAT` it is `{}`.
+   */
+  model?: {
+    ringkasan?: { klaim: string; bukti: string[]; nilai_dikutip?: Record<string, string> | null }[];
+    hipotesis_utama?: { teks: string; bukti: string[] };
+    hipotesis_tandingan?: { teks: string; pembantah?: string }[];
+    belum_diketahui?: string[];
+  };
   [key: string]: unknown;
 };
 

@@ -5,6 +5,7 @@ import {
   statusLabels,
   type TicketStatus,
   type TimelineEvent,
+  type Tone,
 } from "@astria/ui";
 import type {
   CardActivity,
@@ -235,5 +236,71 @@ export function toCardFacts(dokumen: CardDocument | null): CardFacts {
     teknik,
     korelasi: asTextList(kode?.temuan_korelasi),
     buktiIds: [...new Set(ids)],
+  };
+}
+
+/**
+ * Verifier outcome (verifier `policy.py` `putuskan`). The web only labels the status it receives; it never infers a
+ * status from the narrative.
+ */
+const VERIFICATION: Record<string, { label: string; tone: Tone; description: string }> = {
+  LULUS: {
+    label: "Lulus pemeriksa",
+    tone: "success",
+    description: "Semua klaim narasi lolos pemeriksa dan menunjuk ID bukti yang ada.",
+  },
+  SEBAGIAN: {
+    label: "Sebagian lulus",
+    tone: "warning",
+    description: "Sebagian klaim ditolak pemeriksa dan sudah dibuang; yang tampil hanya klaim yang lolos.",
+  },
+  TEMPLAT: {
+    label: "Templat (narasi model ditolak)",
+    tone: "neutral",
+    description: "Narasi model tidak dipakai. Kartu hanya memuat fakta deterministik di bawah.",
+  },
+};
+
+export function verificationView(status: string): { label: string; tone: Tone; description: string } {
+  return (
+    VERIFICATION[status] ?? {
+      label: status || "Belum diverifikasi",
+      tone: "neutral",
+      description: "Status pemeriksa tidak dikenal; narasi ditampilkan apa adanya dari dokumen kartu.",
+    }
+  );
+}
+
+export type CardNarrative = {
+  /** Claims in the order the document lists them, each with the evidence IDs it names (as stored). */
+  claims: { text: string; evidence: string[] }[];
+  hypothesis: { text: string; evidence: string[] } | null;
+  counter: { text: string; rebuttal?: string }[];
+  unknowns: string[];
+  /** True when the document holds no narrative (for example `TEMPLAT`, where the verifier stores `{}`). */
+  empty: boolean;
+};
+
+/** Reads `dokumen.model`. Every field is checked; claims without text are dropped, evidence IDs are not invented. */
+export function toCardNarrative(dokumen: CardDocument | null): CardNarrative {
+  const model = isRecord(dokumen?.model) ? dokumen.model : undefined;
+  const claims = asList(model?.ringkasan).flatMap((c) => {
+    const text = asText(c.klaim);
+    return text ? [{ text, evidence: asTextList(c.bukti) }] : [];
+  });
+  const utama = isRecord(model?.hipotesis_utama) ? model.hipotesis_utama : undefined;
+  const hypothesisText = asText(utama?.teks);
+  const counter = asList(model?.hipotesis_tandingan).flatMap((h) => {
+    const text = asText(h.teks);
+    return text ? [{ text, rebuttal: asText(h.pembantah) }] : [];
+  });
+  const unknowns = asTextList(model?.belum_diketahui);
+  const hypothesis = hypothesisText ? { text: hypothesisText, evidence: asTextList(utama?.bukti) } : null;
+  return {
+    claims,
+    hypothesis,
+    counter,
+    unknowns,
+    empty: !claims.length && !hypothesis && !counter.length && !unknowns.length,
   };
 }

@@ -4,6 +4,8 @@
 
 ### Added
 
+- Detail kartu: bagian "Narasi dan klaim" dari `dokumen.model` (hipotesis utama, klaim dengan chip ID bukti, hipotesis tandingan, belum diketahui) dan lencana status pemeriksa `LULUS`/`SEBAGIAN`/`TEMPLAT` dengan penjelasan masing-masing; `TEMPLAT` menampilkan keadaan kosong, bukan narasi. Sebelumnya narasi tidak ditampilkan sama sekali.
+- Detail kasus DFIR: bagian "Rantai custody" dari `GET /cases/{id}/custody` (nomor, waktu, aktor, aksi, artefak, SHA-256, hash entri) dengan putusan `chain_ok` dari dfir; web tidak menghitung ulang rantai.
 - WhatsApp bot card on the channels page (admin): link status with the masked number, the QR to scan while unlinked (polled every 5 seconds, every 30 seconds once linked), and unlinking after a confirmation dialog. Uses `GET /channels/whatsapp/link` and `POST /channels/whatsapp/link/logout`; hidden when the gateway has no WhatsApp bridge (404).
 - Screens L0-L9 and the admin pages (login, home, digests, handover, upload, metrics, DFIR cases, configuration, channels, identities, deliveries, settings, users, audit) in feature folders, with loading, error and not-found boundaries.
 - Vitest hook tests and architecture tests (`test:unit`, `test:arch`; run under bun and npm).
@@ -11,6 +13,7 @@
 
 ### Fixed
 
+- Detail kartu: galat React "two children with the same key" bila satu teknik ATT&CK punya beberapa taktik (data nyata: T1053.005); kunci chip kini teknik + taktik.
 - `/handover`, `/cases` (and `/cases/[id]`) and `/users` show "Akses ditolak" instead of the screen when the session lacks `handover`, `cases:read` or `identities:admin`. The guard reads the permissions from `GET /auth/me` in the shell layout (`features/session/route-access.ts`), so it also covers screens that make no api call on load; the sidebar drops entries the guard would refuse (web#15).
 - Responses no longer name the server stack: `poweredByHeader: false` removes `X-Powered-By: Next.js` (e2e WEB-DEMO-002).
 
