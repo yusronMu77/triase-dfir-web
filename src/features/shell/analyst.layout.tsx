@@ -1,7 +1,7 @@
 "use client";
 import { Alert, AppShell, Badge, InlineLoading, roleLabels, ToastProvider, TopBar } from "@astria/ui";
 import type { ReactNode } from "react";
-import { ErrorPanel } from "../shared/query-boundary.view";
+import { ErrorPanel, ForbiddenPanel } from "../shared/query-boundary.view";
 import { useShellState } from "./use-shell-state.hook";
 
 export function AnalystLayout({ children }: { children: ReactNode }) {
@@ -37,6 +37,7 @@ export function AnalystLayout({ children }: { children: ReactNode }) {
         role={session.role}
         subtitle={roleLabels[session.role]}
         activePath={shell.activePath}
+        items={shell.navigation}
         onNavigate={shell.navigate}
         onSignOut={shell.signOut}
         topbar={
@@ -53,7 +54,7 @@ export function AnalystLayout({ children }: { children: ReactNode }) {
             {shell.signOutError}
           </Alert>
         )}
-        {children}
+        {shell.forbidden ? <ForbiddenPanel /> : children}
       </AppShell>
     </ToastProvider>
   );

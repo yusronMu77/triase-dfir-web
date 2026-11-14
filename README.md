@@ -26,7 +26,7 @@ bun install --cwd web --frozen-lockfile
 bun run --cwd web dev
 ```
 
-Open `http://localhost:3100/` for the home screen. The sidebar shows the menu of the signed-in role; the api enforces access.
+Open `http://localhost:3100/` for the home screen. The sidebar shows the menu of the signed-in role; the api enforces access. Screens that load no permission-checked data (`/handover`, `/cases`, `/users`) are guarded in the shell layout by the permissions from `GET /auth/me` (`src/features/session/route-access.ts`) and show "Akses ditolak" when the permission is missing.
 
 | Route | Screen |
 |---|---|

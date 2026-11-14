@@ -50,6 +50,7 @@ describe("describeHealth", () => {
 describe("useShellState", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    nav.pathname = "/cards/IC-20261110-003";
     vi.mocked(authService.me).mockResolvedValue({
       user_id: "usr_1",
       roles: ["analis"],
@@ -83,5 +84,71 @@ describe("useShellState", () => {
     expect(nav.replace).not.toHaveBeenCalled();
     await act(() => result.current.signOut());
     expect(nav.replace).toHaveBeenCalledWith("/login");
+  });
+
+  const me = (roles: string[], permissions: unknown) =>
+    vi.mocked(authService.me).mockResolvedValue({ user_id: "usr_1", roles, permissions } as never);
+
+  it.each([
+    ["pimpinan", "/handover", ["session", "digests:read"]],
+    ["pimpinan", "/cases", ["session", "digests:read"]],
+    ["pimpinan", "/cases/DF-20261110-001", ["session", "digests:read"]],
+    ["analis", "/users", ["session", "handover", "identities:own"]],
+    ["dfir", "/users", ["session", "cases:read", "identities:own"]],
+  ])("forbids %s on %s from the /auth/me permissions", async (role, pathname, permissions) => {
+    nav.pathname = pathname;
+    me([role], permissions);
+    const { result } = renderHook(() => useShellState(), { wrapper });
+    await waitFor(() => expect(result.current.session.user).not.toBeNull());
+    expect(result.current.forbidden).toBe(true);
+  });
+
+  it.each([
+    ["analis", "/handover", ["session", "handover"]],
+    ["dfir", "/cases/DF-20261110-001", ["session", "cases:read"]],
+    ["admin", "/users", ["session", "identities:admin"]],
+    ["pimpinan", "/digests", ["session", "digests:read"]],
+  ])("allows %s on %s", async (role, pathname, permissions) => {
+    nav.pathname = pathname;
+    me([role], permissions);
+    const { result } = renderHook(() => useShellState(), { wrapper });
+    await waitFor(() => expect(result.current.session.user).not.toBeNull());
+    expect(result.current.forbidden).toBe(false);
+  });
+
+  it.each([
+    ["missing", undefined],
+    ["null", null],
+    ["a number", 7],
+    ["an object", { handover: true }],
+  ])("fails closed when permissions are %s", async (_label, permissions) => {
+    nav.pathname = "/handover";
+    me(["analis"], permissions);
+    const { result } = renderHook(() => useShellState(), { wrapper });
+    await waitFor(() => expect(result.current.session.user).not.toBeNull());
+    expect(result.current.forbidden).toBe(true);
+    expect(result.current.session.can("handover")).toBe(false);
+  });
+
+  it("follows the permissions of the next session after signing in again", async () => {
+    nav.pathname = "/users";
+    me(["analis"], ["session"]);
+    const { result } = renderHook(() => useShellState(), { wrapper });
+    await waitFor(() => expect(result.current.session.user).not.toBeNull());
+    expect(result.current.forbidden).toBe(true);
+    me(["admin"], ["session", "identities:admin"]);
+    act(() => result.current.session.retry());
+    await waitFor(() => expect(result.current.forbidden).toBe(false));
+  });
+
+  it("drops menu entries whose route the session may not open", async () => {
+    me(["dfir"], ["session", "cards:read", "cases:read"]);
+    const { result } = renderHook(() => useShellState(), { wrapper });
+    await waitFor(() => expect(result.current.session.user).not.toBeNull());
+    const menu = result.current.navigation.map((item) => item.href);
+    expect(menu).toContain("/cases");
+    expect(menu).toContain("/cards");
+    expect(menu).not.toContain("/handover");
+    expect(menu).not.toContain("/users");
   });
 });
