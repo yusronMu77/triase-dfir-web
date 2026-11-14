@@ -8,13 +8,25 @@ import {
   CardHeader,
   CaseReport,
   CaseTimeline,
+  type Column,
+  DataTable,
+  EmptyState,
   EntityRow,
   InlineLoading,
   PageHeader,
 } from "@astria/ui";
 import Link from "next/link";
 import { QueryBoundary } from "../shared/query-boundary.view";
-import { CASE_ID_HINT, type CaseSummary, describeReportError, isCaseId } from "./case.mapper";
+import {
+  CASE_ID_HINT,
+  type CaseCustody,
+  type CaseSummary,
+  type CustodyRow,
+  describeReportError,
+  isCaseId,
+  shortHash,
+} from "./case.mapper";
+import { useCaseCustody } from "./use-case-custody.hook";
 import { useCaseDetail } from "./use-case-detail.hook";
 import { useCaseReport } from "./use-case-report.hook";
 import { useCaseTimeline } from "./use-case-timeline.hook";
@@ -22,6 +34,7 @@ import { useCaseTimeline } from "./use-case-timeline.hook";
 export function CaseDetailView({ id }: { id: string }) {
   const detail = useCaseDetail(id);
   const timeline = useCaseTimeline(id);
+  const custody = useCaseCustody(id);
   const report = useCaseReport(id);
   const valid = isCaseId(id);
 
@@ -72,6 +85,15 @@ export function CaseDetailView({ id }: { id: string }) {
             </div>
           )}
 
+          <QueryBoundary
+            loading={custody.loading}
+            error={custody.error}
+            onRetry={custody.retry}
+            skeleton="rows"
+          >
+            {custody.data && <CustodyCard custody={custody.data} />}
+          </QueryBoundary>
+
           {detail.data && <ReportCard summary={detail.data} caseId={id} report={report} />}
         </div>
       )}
@@ -115,6 +137,96 @@ function SummaryCard({ summary }: { summary: CaseSummary }) {
         ) : (
           <p className="a-muted">Tidak ada keterbatasan yang dicatat.</p>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+const HashCell = ({ value }: { value: string | null }) =>
+  value ? (
+    <span className="a-mono" title={value}>
+      {shortHash(value)}
+    </span>
+  ) : (
+    "-"
+  );
+
+const CUSTODY_COLUMNS: Column<CustodyRow>[] = [
+  { id: "seq", header: "No", cell: (r) => r.seq },
+  {
+    id: "time",
+    header: "Waktu (WIB)",
+    cell: (r) => (
+      <time dateTime={r.ts} title={r.ts}>
+        {r.time}
+      </time>
+    ),
+  },
+  { id: "actor", header: "Aktor", cell: (r) => <span className="a-mono">{r.actor}</span> },
+  {
+    id: "action",
+    header: "Aksi",
+    cell: (r) => (
+      <Badge tone={r.actionTone} title={r.action}>
+        {r.actionLabel}
+      </Badge>
+    ),
+  },
+  {
+    id: "artifact",
+    header: "Artefak",
+    cell: (r) =>
+      r.artifactId || r.detail ? (
+        <span>
+          {r.artifactId && <span className="a-mono">{r.artifactId}</span>}
+          {r.artifactId && r.detail ? " · " : null}
+          {r.detail}
+        </span>
+      ) : (
+        "-"
+      ),
+  },
+  { id: "sha256", header: "SHA-256 artefak", cell: (r) => <HashCell value={r.sha256} /> },
+  { id: "entry", header: "Hash entri", cell: (r) => <HashCell value={r.entryHash} /> },
+];
+
+/** Custody log as stored by dfir. The integrity verdict is dfir's `chain_ok`; the browser does not recompute it. */
+function CustodyCard({ custody }: { custody: CaseCustody }) {
+  if (!custody.rows.length) {
+    return (
+      <Card>
+        <CardHeader title="Rantai custody" />
+        <CardContent>
+          <EmptyState title="Belum ada entri custody" description="dfir belum mencatat penanganan bukti." />
+        </CardContent>
+      </Card>
+    );
+  }
+  return (
+    <Card>
+      <CardHeader
+        title="Rantai custody"
+        description={`${custody.rows.length} entri berantai hash, urut menurut nomor`}
+      />
+      <CardContent>
+        <div className="a-stack">
+          {custody.chainOk ? (
+            <Alert tone="success" title="Rantai custody utuh">
+              Hasil cek layanan dfir atas seluruh entri: setiap hash entri cocok dengan entri sebelumnya.
+            </Alert>
+          ) : (
+            <Alert tone="danger" title="Rantai custody terputus">
+              Layanan dfir menemukan entri yang tidak cocok dengan rantai hash. Jangan pakai bukti kasus ini
+              sebelum diperiksa.
+            </Alert>
+          )}
+          <DataTable
+            caption="Rantai custody kasus"
+            columns={CUSTODY_COLUMNS}
+            rows={custody.rows}
+            rowKey={(r) => r.key}
+          />
+        </div>
       </CardContent>
     </Card>
   );

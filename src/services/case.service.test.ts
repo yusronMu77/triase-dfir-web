@@ -38,6 +38,15 @@ describe("caseService", () => {
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/api/v1/cases/CS-20261112-001/timeline?limit=50");
   });
 
+  it("gets the custody chain of a case under /api/v1 with the ID encoded", async () => {
+    const custody = { case_id: "CS-20261112-001", entries: [], chain_ok: true };
+    fetchMock.mockResolvedValue(Response.json(custody));
+    const body = await caseService.custody("CS-20261112-001");
+    expect(body).toEqual(custody);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/api/v1/cases/CS-20261112-001/custody");
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({ method: "GET", credentials: "same-origin" });
+  });
+
   it("requests the report as a blob with format=html and returns the raw body", async () => {
     fetchMock.mockResolvedValue(
       new Response("<h1>Laporan</h1>", { headers: { "Content-Type": "text/html; charset=utf-8" } }),

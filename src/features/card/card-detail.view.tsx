@@ -13,10 +13,12 @@ import {
   StatusBadge,
   TechniqueChip,
   TimelineItem,
+  type Tone,
 } from "@astria/ui";
 import Link from "next/link";
 import {
   bandToSeverity,
+  type CardNarrative,
   conclusionLabels,
   evidenceAnchor,
   formatWaktu,
@@ -24,7 +26,9 @@ import {
   statusLabel,
   statusToTicket,
   toCardFacts,
+  toCardNarrative,
   toTimelineEvents,
+  verificationView,
 } from "../../services/cards.mapper";
 import type { CardDetail, PenjelasEntry } from "../../services/cards.types";
 import { QueryBoundary } from "../shared/query-boundary.view";
@@ -67,6 +71,8 @@ type Actions = ReturnType<typeof useCardActions>;
 
 function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail; actions: Actions }) {
   const facts = toCardFacts(card.dokumen);
+  const narrative = toCardNarrative(card.dokumen);
+  const verification = verificationView(card.status_verifikasi);
   const sla = slaOf(card, Date.now());
   const events = toTimelineEvents(card.aktivitas);
   const penjelas = Object.entries(card.penjelas ?? {});
@@ -100,7 +106,14 @@ function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail;
                 label: "Kesimpulan",
                 value: card.kesimpulan ? conclusionLabels[card.kesimpulan] : "Belum ada",
               },
-              { label: "Verifikasi", value: card.status_verifikasi },
+              {
+                label: "Verifikasi",
+                value: (
+                  <Badge tone={verification.tone} title={card.status_verifikasi}>
+                    {card.status_verifikasi || "-"}
+                  </Badge>
+                ),
+              },
               { label: "Versi", value: `v${card.versi}` },
               { label: "Diperbarui", value: formatWaktu(card.diperbarui_pada) },
             ]}
@@ -114,6 +127,8 @@ function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail;
             )}
             {card.kesimpulan_catatan && <p className="a-muted">{card.kesimpulan_catatan}</p>}
           </CaseOverview>
+
+          <NarrativeCard narrative={narrative} status={card.status_verifikasi} verification={verification} />
 
           <Card>
             <CardHeader title="Faktor skor" />
@@ -155,7 +170,8 @@ function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail;
               {facts.teknik.length > 0 && (
                 <div className="a-row">
                   {facts.teknik.map((technique) => (
-                    <TechniqueChip key={technique.id}>
+                    // One technique can serve several tactics (T1053.005: execution, persistence, ...).
+                    <TechniqueChip key={`${technique.id}-${technique.taktik ?? ""}`}>
                       {technique.id}
                       {technique.taktik ? ` · ${technique.taktik}` : ""}
                     </TechniqueChip>
@@ -224,6 +240,95 @@ function CardBody({ card, detail, actions }: { card: CardDetail; detail: Detail;
         </div>
       </div>
     </>
+  );
+}
+
+function EvidenceChips({ ids }: { ids: string[] }) {
+  if (!ids.length) return null;
+  return (
+    <div className="a-row">
+      {ids.map((evidenceId) => (
+        <EvidenceChip key={evidenceId} href={`#${evidenceAnchor(evidenceId)}`}>
+          {evidenceId}
+        </EvidenceChip>
+      ))}
+    </div>
+  );
+}
+
+/** Narrative after the verifier: each claim keeps the evidence IDs stored in the card document. */
+function NarrativeCard({
+  narrative,
+  status,
+  verification,
+}: {
+  narrative: CardNarrative;
+  status: string;
+  verification: { label: string; tone: Tone; description: string };
+}) {
+  return (
+    <Card>
+      <CardHeader
+        title="Narasi dan klaim"
+        description={verification.description}
+        action={
+          <Badge tone={verification.tone} title={status}>
+            {verification.label}
+          </Badge>
+        }
+      />
+      <CardContent>
+        {narrative.empty ? (
+          <EmptyState
+            title="Tidak ada narasi model"
+            description={
+              status === "TEMPLAT"
+                ? "Pemeriksa menolak narasi model; gunakan faktor skor dan entitas di bawah."
+                : "Dokumen kartu belum memuat narasi."
+            }
+          />
+        ) : (
+          <div className="a-stack">
+            {narrative.hypothesis && (
+              <div className="a-stack">
+                <strong>Hipotesis utama</strong>
+                <p>{narrative.hypothesis.text}</p>
+                <EvidenceChips ids={narrative.hypothesis.evidence} />
+              </div>
+            )}
+            {narrative.claims.length > 0 && (
+              <div className="a-stack">
+                <strong>Klaim ({narrative.claims.length})</strong>
+                <ol className="a-stack" aria-label="Klaim narasi">
+                  {narrative.claims.map((claim, index) => (
+                    // Claims have no ID of their own; the position is stable within one card version.
+                    // biome-ignore lint/suspicious/noArrayIndexKey: claim order is fixed per card version
+                    <li key={index} className="a-stack">
+                      <span>{claim.text}</span>
+                      <EvidenceChips ids={claim.evidence} />
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {narrative.counter.length > 0 && (
+              <div>
+                <strong>Hipotesis tandingan</strong>
+                <ul>
+                  {narrative.counter.map((item) => (
+                    <li key={item.text}>
+                      {item.text}
+                      {item.rebuttal ? ` · Pembantah: ${item.rebuttal}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <ListBlock title="Belum diketahui" items={narrative.unknowns} />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

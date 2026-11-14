@@ -7,8 +7,10 @@ import {
   slaOf,
   statusToTicket,
   toCardFacts,
+  toCardNarrative,
   toQueueItem,
   toTimelineEvents,
+  verificationView,
 } from "./cards.mapper";
 import type { CardActivity, CardDocument, CardSummary } from "./cards.types";
 
@@ -195,5 +197,71 @@ describe("toCardFacts", () => {
     const facts = toCardFacts(broken);
     expect(facts).toEqual({ faktor: [], entitas: [], teknik: [], korelasi: [], buktiIds: [] });
     expect(toCardFacts(null).buktiIds).toEqual([]);
+  });
+});
+
+describe("verificationView", () => {
+  it("labels the three verifier outcomes with distinct tones", () => {
+    expect(verificationView("LULUS")).toMatchObject({ label: "Lulus pemeriksa", tone: "success" });
+    expect(verificationView("SEBAGIAN")).toMatchObject({ label: "Sebagian lulus", tone: "warning" });
+    expect(verificationView("TEMPLAT")).toMatchObject({ tone: "neutral" });
+    expect(verificationView("TEMPLAT").label).toMatch(/Templat/);
+  });
+
+  it("shows an unknown status as received instead of guessing", () => {
+    expect(verificationView("MENUNGGU")).toMatchObject({ label: "MENUNGGU", tone: "neutral" });
+    expect(verificationView("").label).toBe("Belum diverifikasi");
+  });
+});
+
+describe("toCardNarrative", () => {
+  it("keeps every claim with exactly the evidence IDs stored in the document", () => {
+    const dokumen: CardDocument = {
+      model: {
+        ringkasan: [
+          {
+            klaim: "Akun svc-backup diduga terbobol.",
+            bukti: ["EV-hb01-000001", "EV-hb01-000022"],
+            nilai_dikutip: null,
+          },
+          { klaim: "Akun adm-support dibuat dalam insiden.", bukti: ["EV-hb01-000027"] },
+        ],
+        hipotesis_utama: { teks: "Dugaan pengambilalihan akun.", bukti: ["EV-hb01-000001"] },
+        hipotesis_tandingan: [{ teks: "Uji penetrasi terjadwal.", pembantah: "Tidak ada tiket uji." }],
+        belum_diketahui: ["Hipotesis tandingan belum dinilai."],
+      },
+    };
+    const narrative = toCardNarrative(dokumen);
+    expect(narrative.empty).toBe(false);
+    expect(narrative.claims).toEqual([
+      { text: "Akun svc-backup diduga terbobol.", evidence: ["EV-hb01-000001", "EV-hb01-000022"] },
+      { text: "Akun adm-support dibuat dalam insiden.", evidence: ["EV-hb01-000027"] },
+    ]);
+    expect(narrative.hypothesis).toEqual({
+      text: "Dugaan pengambilalihan akun.",
+      evidence: ["EV-hb01-000001"],
+    });
+    expect(narrative.counter).toEqual([
+      { text: "Uji penetrasi terjadwal.", rebuttal: "Tidak ada tiket uji." },
+    ]);
+    expect(narrative.unknowns).toEqual(["Hipotesis tandingan belum dinilai."]);
+  });
+
+  it("is empty for a TEMPLAT card, whose model the verifier stores as {}", () => {
+    expect(toCardNarrative({ model: {} }).empty).toBe(true);
+    expect(toCardNarrative(null)).toEqual({
+      claims: [],
+      hypothesis: null,
+      counter: [],
+      unknowns: [],
+      empty: true,
+    });
+  });
+
+  it("drops malformed claims and non-text evidence IDs instead of inventing values", () => {
+    const narrative = toCardNarrative({
+      model: { ringkasan: [{ bukti: ["EV-1"] }, { klaim: "Valid.", bukti: ["EV-2", 7, null] }] },
+    } as unknown as CardDocument);
+    expect(narrative.claims).toEqual([{ text: "Valid.", evidence: ["EV-2"] }]);
   });
 });
