@@ -110,7 +110,7 @@ Known gaps (each is upstream, not in `web`; see `HANDOFF.md`):
 
 ### Login and session integration
 
-Use the existing same-origin Caddy entry point at `http://localhost:8088` with the dev stack running: `/api/v1/*` goes to `api`, all other paths to `web`. Opening port 3100 directly provides the frontend only; login will report the missing API. The API's `ASTRIA_PUBLIC_ORIGIN` must match the browser origin if configured, as unsafe requests are protected by Origin checks. No browser-side service keys or cross-origin credential configuration are needed.
+Use the same-origin Caddy entry point with the dev stack running: `http://localhost:3100` (the address the VS Code task opens) or `http://localhost:8088`. Caddy sends `/api/v1/*` to `api` and all other paths to `web`. In the devenv stack the `js` container does not publish port 3100 itself, so both addresses go through Caddy. Running `next dev` directly on the host (outside devenv) serves the frontend only; set `ASTRIA_API_ORIGIN` there. The API's `ASTRIA_PUBLIC_ORIGIN` must match the browser origin if configured, as unsafe requests are protected by Origin checks. No browser-side service keys or cross-origin credential configuration are needed.
 
 `src/lib/auth-api.ts` posts `{ username, password }` to `/api/v1/auth/login`, sends same-origin cookies, and bounds requests to 15 seconds. The API sets and revokes the HttpOnly `astria_session` cookie; tokens and passwords are never persisted in browser storage. HTTP errors, malformed responses, network failures and timeouts produce safe Indonesian messages. Login stays locked until navigation succeeds; failed requests can be retried. Logout calls `/api/v1/auth/logout` before navigating; an expired session (401) is already signed out.
 
