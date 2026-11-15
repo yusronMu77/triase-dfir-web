@@ -1,0 +1,13 @@
+/* Presentation for sandboxed previews of scheduler/digest_harian and dfir/laporan-v1.
+   Downloads retain the original server document and its hash. No inline style or CSP exception is needed. */
+body { font:14px/1.5 system-ui,sans-serif; color:#112c3b; background:#f4f7f5; margin:1rem; overflow-wrap:anywhere; }
+h1 { font-size:1.4rem; margin-bottom:.25rem; }
+h2 { font-size:1.15rem; margin-top:2rem; }
+.meta,.kaki { color:#4a5d68; font-size:.9rem; }
+.lencana { display:inline-block; border:1px solid #008775; color:#008775; border-radius:4px; padding:0 .4rem; font-size:.8rem; }
+.peringatan { border-left:4px solid #b54708; background:#fff4e5; padding:.5rem .75rem; }
+.tanda { color:#a40000; font-weight:600; }
+table { border-collapse:collapse; margin:.5rem 0 1rem; max-width:100%; }
+th,td { border:1px solid #c9d4d0; padding:.25rem .6rem; text-align:left; vertical-align:top; }
+th { background:#e4ece8; }
+code,.hash { font:11px ui-monospace,monospace; overflow-wrap:anywhere; }

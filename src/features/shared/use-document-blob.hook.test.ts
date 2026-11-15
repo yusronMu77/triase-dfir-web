@@ -35,26 +35,32 @@ describe("useDocumentBlob", () => {
     expect(result.current.loading).toBe(false);
   });
 
-  it("turns the fetched blob into an object URL", async () => {
-    const fetcher = vi.fn(async () => new Blob(["<p>x</p>"], { type: "text/html" }));
+  it("keeps the original download blob and exposes styled HTML for a sandboxed srcDoc preview", async () => {
+    const original = new Blob(["<p>x</p>"], { type: "text/html" });
+    const fetcher = vi.fn(async () => original);
+    createObjectURL.mockReturnValueOnce("blob:original");
     const { result } = renderHook(
       () => useDocumentBlob({ queryKey: ["test", "doc", "b"], fetcher, enabled: true }),
       { wrapper },
     );
-    await waitFor(() => expect(result.current.url).toBe("blob:fake-1"));
+    await waitFor(() => expect(result.current.previewHtml).toContain("<p>x</p>"));
+    expect(result.current.previewHtml).toContain('rel="stylesheet"');
+    expect(result.current.url).toBe("blob:original");
     expect(fetcher).toHaveBeenCalledWith(expect.any(AbortSignal));
     expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(createObjectURL.mock.calls[0][0]).toBe(original);
   });
 
   it("revokes the object URL on unmount", async () => {
+    createObjectURL.mockReturnValueOnce("blob:original");
     const fetcher = async () => new Blob(["<p>x</p>"]);
     const { result, unmount } = renderHook(
       () => useDocumentBlob({ queryKey: ["test", "doc", "c"], fetcher, enabled: true }),
       { wrapper },
     );
-    await waitFor(() => expect(result.current.url).toBe("blob:fake-1"));
+    await waitFor(() => expect(result.current.previewHtml).toContain("<p>x</p>"));
     unmount();
-    expect(revokeObjectURL).toHaveBeenCalledWith("blob:fake-1");
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:original");
   });
 
   it("surfaces the error with the ApiError so the caller can explain it", async () => {

@@ -93,11 +93,11 @@ function DigestBody({ digest, doc }: { digest: DigestDetail; doc: ReturnType<typ
             >
               {describeDocumentError(doc.error)}
             </Alert>
-          ) : doc.url ? (
+          ) : doc.previewHtml ? (
             // Published HTML from the server, shown in a sandboxed iframe with no `allow-scripts`.
             <iframe
               title={`Dokumen digest ${digest.id}`}
-              src={doc.url}
+              srcDoc={doc.previewHtml}
               sandbox=""
               style={{ width: "100%", height: "70vh", border: 0 }}
             />
