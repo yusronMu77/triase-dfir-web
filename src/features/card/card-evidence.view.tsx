@@ -61,7 +61,7 @@ function EvidenceEntry({ item }: { item: EvidenceItem }) {
       {Object.entries(item.fields).map(([key, value]) => (
         <EntityRow key={key} label={key} value={value} />
       ))}
-      {item.excerpt && <p className="a-muted">{item.excerpt}</p>}
+      {item.excerpt && <p className="a-muted web-evidence-excerpt">{item.excerpt}</p>}
     </article>
   );
 }

@@ -334,7 +334,7 @@ function NarrativeCard({
 
 function PenjelasItem({ ruleId, entry }: { ruleId: string; entry: PenjelasEntry }) {
   return (
-    <article className="a-stack">
+    <article className="a-stack web-card-explanation">
       <strong>{entry.judul}</strong>
       <small className="a-mono a-muted">{ruleId}</small>
       <p>{entry.penjelasan}</p>

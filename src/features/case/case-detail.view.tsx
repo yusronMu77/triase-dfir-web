@@ -280,11 +280,11 @@ function ReportCard({
         >
           {describeReportError(report.error)}
         </Alert>
-      ) : report.url ? (
+      ) : report.previewHtml ? (
         // The report is HTML from the server. A sandboxed iframe with no `allow-scripts` renders it without running code.
         <iframe
           title={`Laporan kasus ${caseId}`}
-          src={report.url}
+          srcDoc={report.previewHtml}
           sandbox=""
           style={{ width: "100%", height: "70vh", border: 0 }}
         />

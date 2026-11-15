@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { documentPreview } from "./document-preview";
 
 export type DocumentBlobOptions = {
   /** Cache key. Keep the domain prefix (for example `queryKeys.digests.all`) so SSE invalidation reaches it. */
@@ -10,8 +11,9 @@ export type DocumentBlobOptions = {
 };
 
 /**
- * Loads a raw document (HTML) as a Blob and exposes an object URL for an `<iframe sandbox>` or a download link.
- * The URL is revoked when the document changes or the component unmounts. The HTML is never injected into the DOM.
+ * Keeps the original HTML download separate from the styled, sandboxed preview.
+ * The download URL is revoked on change/unmount. Preview HTML is only passed to an empty-sandbox iframe's srcDoc:
+ * WebKit applies the parent's frame-ancestors restriction to blob frames, leaving those previews blank.
  */
 export function useDocumentBlob({ queryKey, fetcher, enabled }: DocumentBlobOptions) {
   const query = useQuery({
@@ -22,21 +24,42 @@ export function useDocumentBlob({ queryKey, fetcher, enabled }: DocumentBlobOpti
     staleTime: Number.POSITIVE_INFINITY,
   });
   const [url, setUrl] = useState<string | null>(null);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<Error | null>(null);
 
   useEffect(() => {
+    setPreviewError(null);
     if (!query.data) {
       setUrl(null);
+      setPreviewHtml(null);
       return;
     }
     const objectUrl = URL.createObjectURL(query.data);
     setUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
+    setPreviewHtml(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const html = documentPreview(
+        String(reader.result),
+        new URL("/document-preview.css", window.location.origin).href,
+      );
+      setPreviewHtml(html);
+    };
+    reader.onerror = () => setPreviewError(new Error("Pratinjau dokumen gagal dibaca. Silakan coba lagi."));
+    reader.readAsText(query.data);
+    return () => {
+      reader.onload = null;
+      reader.onerror = null;
+      reader.abort();
+      URL.revokeObjectURL(objectUrl);
+    };
   }, [query.data]);
 
   return {
     url,
+    previewHtml,
     loading: enabled && query.isPending && query.fetchStatus === "fetching",
-    error: query.error,
+    error: query.error ?? previewError,
     retry: () => void query.refetch(),
   };
 }
